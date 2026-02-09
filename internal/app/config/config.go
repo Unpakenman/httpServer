@@ -13,6 +13,23 @@ type Values struct {
 	ClinicsDB       *DBConfig              `envconfig:"DB_CLINICS" required:"true"`
 	HttpClient      *HTTPClientConfig      `envconfig:"HTTP_CLIENT" required:"true"`
 	SomeHttpService *SomeHttpServiceConfig `envconfig:"SOME_HTTP_SERVICE" required:"true"`
+	GRPCServer      *GRPCServerConfig      `envconfig:"GRPC_SERVER" required:"true"`
+	GRPCClient      *GRPCClientConfig      `envconfig:"GRPC_CLIENT" required:"true"`
+}
+
+type GRPCServerConfig struct {
+	Port                           int32         `envconfig:"PORT" required:"true"`
+	KeepaliveMaxConnectionIdle     time.Duration `envconfig:"KEEPALIVE_MAX_CONNECTION_IDLE" required:"true"`
+	KeepaliveMaxConnectionAge      time.Duration `envconfig:"KEEPALIVE_MAX_CONNECTION_AGE" required:"true"`
+	KeepaliveMaxConnectionAgeGrace time.Duration `envconfig:"KEEPALIVE_MAX_CONNECTION_AGE_GRACE" required:"true"`
+	KeepaliveTime                  time.Duration `envconfig:"KEEPALIVE_TIME" required:"true"`
+	KeepaliveTimeout               time.Duration `envconfig:"KEEPALIVE_TIMEOUT" required:"true"`
+}
+
+type GRPCClientConfig struct {
+	KeepaliveTime               time.Duration `envconfig:"KEEPALIVE_TIME" required:"true"`
+	KeepaliveTimeout            time.Duration `envconfig:"KEEPALIVE_TIMEOUT" required:"true"`
+	KeepalivePermitWithoutCalls bool          `envconfig:"KEEPALIVE_PERMIT_WITHOUT_CALLS" required:"true"`
 }
 
 type HTTPServerConfig struct {
