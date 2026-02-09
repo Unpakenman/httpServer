@@ -13,6 +13,7 @@ func (s *ServerClinic) AddClinic(
 	resp := clinics.AddClinicResponse{
 		ClinicId: int64(1),
 	}
+
 	response := s.mapper.AddClinicResponseToProtoResponse(resp)
 	return response, nil
 }
