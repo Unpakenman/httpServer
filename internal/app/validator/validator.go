@@ -10,6 +10,7 @@ type validator struct{}
 type Validator interface {
 	CreatePatient(data models.CreatePatientRequest) error
 	AddClinic(req *pb.AddClinicRequest) error
+	AddEmployee(req *pb.AddEmployeeRequest) error
 }
 
 func New() Validator {

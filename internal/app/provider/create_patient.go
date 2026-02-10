@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type CreatePatient struct {
+type CreatePatientRequest struct {
 	FirstName      string
 	LastName       string
 	MiddleName     *string
@@ -24,7 +24,7 @@ type CreatePatient struct {
 func (p *goExampleDBProvider) CreatePatient(
 	ctx context.Context,
 	tx pgclient.Transaction,
-	data CreatePatient,
+	data CreatePatientRequest,
 ) (models.Patients, error) {
 
 	var patientData models.Patients

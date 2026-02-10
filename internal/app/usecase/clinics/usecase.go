@@ -30,10 +30,7 @@ func NewUseCase(
 }
 
 type UseCase interface {
-	CreatePatient(
-		ctx context.Context,
-		req CreatePatientRequest) (CreatePatientResponse, error)
-	AddClinic(
-		ctx context.Context,
-		req AddClinicRequest) (AddClinicResponse, error)
+	CreatePatient(ctx context.Context, req CreatePatientRequest) (CreatePatientResponse, error)
+	AddClinic(ctx context.Context, req AddClinicRequest) (AddClinicResponse, error)
+	AddEmployee(ctx context.Context, req AddEmployeeRequest) (AddEmployeeResponse, error)
 }

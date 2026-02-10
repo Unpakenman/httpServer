@@ -17,6 +17,19 @@
     clinic_id,
     clinic_address,
     email,
-    opening_hours
+    opening_hours,
     created_at
 {{end}}
+
+{{define "Employees"}}
+    employee_id,
+    role_id,
+    specialization_id,
+    first_name,
+    last_name,
+    middle_name,
+    birthdate,
+    phone,
+    email,
+    hire_date
+ {{end}}

@@ -3,7 +3,7 @@ package grpcserver
 import (
 	"context"
 	pb "github.com/Unpakenman/protos/gen/go/sso"
-	"github.com/Unpakenman/protos/gen/go/sso/rpc"
+	rpc "github.com/Unpakenman/protos/gen/go/sso/rpc"
 	"httpServer/internal/app/grpcserver/clinic"
 	"httpServer/internal/app/grpcserver/mapper"
 	"httpServer/internal/app/usecase/clinics"
@@ -30,4 +30,8 @@ func NewClinicServer(
 
 func (s *ClinicServer) AddClinic(ctx context.Context, req *rpc.AddClinicRequest) (*rpc.AddClinicResponse, error) {
 	return s.inner.AddClinic(ctx, req)
+}
+
+func (s *ClinicServer) AddEmployee(ctx context.Context, req *rpc.AddEmployeeRequest) (*rpc.AddEmployeeResponse, error) {
+	return s.inner.AddEmployee(ctx, req)
 }

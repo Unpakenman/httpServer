@@ -26,3 +26,18 @@ INSERT INTO clinics.clinics(
 )VALUES ($1, $2, $3, $4, NOW())
 RETURNING {{template "Clinics"}}
 {{end}}
+
+{{define "CreateEmployee"}}
+INSERT INTO clinics.employees(
+    role_id,
+    specialization_id,
+    first_name,
+    last_name,
+    middle_name,
+    birthdate,
+    phone,
+    email,
+    hire_date
+)VALUES($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+RETURNING {{template "Employees"}}
+{{end}}
