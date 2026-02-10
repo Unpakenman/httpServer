@@ -24,32 +24,36 @@ import (
 	"syscall"
 )
 
-func RunService(ctx context.Context) {
+func RunService(ctx context.Context, cfg *config.Values) {
 	log := slog.New(
 		slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 			Level: slog.LevelInfo,
 		}),
 	)
 	chiRouter := NewChiRouter()
-	httpConfig := config.Config.HttpServer
+	httpConfig := cfg.HttpServer
 
-	httpServer, err := RunHTTPServer(chiRouter, httpConfig)
+	httpServer, err := RunHTTPServer(chiRouter, *log, httpConfig)
 	if err != nil {
 		log.Error(err.Error())
 	}
+
 	mapperInstance := mapper.New()
 	validatorInstance := validator.New()
-	dbConn, err := pg.New(config.Config.ClinicsDB)
+	dbConn, err := pg.New(cfg.ClinicsDB)
 	if err != nil {
 		log.Error(err.Error())
 	}
 
 	goExampleDBProvider := provider.NewGoExampleDBProvider(dbConn)
-	httpClient := http.NewHTTPClient(config.Config.HttpClient, log)
+
+	httpClient := http.NewHTTPClient(cfg.HttpClient, log)
 	httpMapperInstance := httpmapper.New()
-	someService := ihttpservice.NewService(config.Config.SomeHttpService, httpClient)
-	someUseCase := clinics.NewUseCase(goExampleDBProvider, someService)
-	grpcPortListener, err := NewGRPCPortListener(config.Config.GRPCServer)
+
+	someService := ihttpservice.NewService(cfg.SomeHttpService, httpClient)
+	clinicsUseCaseInstance := clinics.NewUseCase(goExampleDBProvider, *log, someService, cfg)
+
+	grpcPortListener, err := NewGRPCPortListener(cfg.GRPCServer)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -59,12 +63,14 @@ func RunService(ctx context.Context) {
 			log.Error(err.Error())
 		}
 	}()
+
 	clinicServerInstance := grpcserver.NewClinicServer(
+		log,
 		validatorInstance,
 		mapperInstance,
-		someUseCase)
+		clinicsUseCaseInstance)
 	healthcheck := health.NewServer()
-	grpcServer, err := NewGRPCServer(config.Config.GRPCServer, log)
+	grpcServer, err := NewGRPCServer(cfg.GRPCServer, log)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -84,12 +90,12 @@ func RunService(ctx context.Context) {
 	_ = httpserver.NewHttpServer(
 		*log,
 		chiRouter,
-		config.Config.HttpServer,
+		cfg.HttpServer,
 		httpMapperInstance,
 		validatorInstance,
-		someUseCase,
+		clinicsUseCaseInstance,
 	)
-	log.Info("app is ready")
+	log.Info("app service started")
 	select {
 	case v := <-exit:
 		log.Warn(fmt.Sprintf("signal.Notify: %v", v))

@@ -14,5 +14,5 @@ func main() {
 		panic(err)
 	}
 	config.Config = cfg
-	bootstrap.RunService(ctx)
+	bootstrap.RunService(ctx, cfg)
 }

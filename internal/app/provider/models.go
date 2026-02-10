@@ -18,4 +18,9 @@ type GoExampleProvider interface {
 		tx pgclient.Transaction,
 		data CreatePatient,
 	) (models.Patients, error)
+	CreateClinic(
+		ctx context.Context,
+		tx pgclient.Transaction,
+		data CreateClinicRequest,
+	) (models.Clinic, error)
 }
