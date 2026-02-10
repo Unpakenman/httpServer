@@ -60,6 +60,7 @@ func RunService(ctx context.Context) {
 		}
 	}()
 	clinicServerInstance := grpcserver.NewClinicServer(
+		log,
 		validatorInstance,
 		mapperInstance,
 		someUseCase)

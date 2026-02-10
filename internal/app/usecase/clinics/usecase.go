@@ -25,4 +25,7 @@ type UseCase interface {
 	CreatePatient(
 		ctx context.Context,
 		req CreatePatientRequest) (CreatePatientResponse, error)
+	AddClinic(
+		ctx context.Context,
+		req AddClinicRequest) (AddClinicResponse, error)
 }
