@@ -24,51 +24,55 @@ import (
 	"syscall"
 )
 
-func RunService(ctx context.Context, cfg *config.Values, logger slog.Logger) {
-
+func RunService(ctx context.Context, cfg *config.Values) {
+	log := slog.New(
+		slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelInfo,
+		}),
+	)
 	chiRouter := NewChiRouter()
 	httpConfig := cfg.HttpServer
 
-	httpServer, err := RunHTTPServer(chiRouter, logger, httpConfig)
+	httpServer, err := RunHTTPServer(chiRouter, *log, httpConfig)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Error(err.Error())
 	}
 
 	mapperInstance := mapper.New()
 	validatorInstance := validator.New()
 	dbConn, err := pg.New(cfg.ClinicsDB)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Error(err.Error())
 	}
 
 	goExampleDBProvider := provider.NewGoExampleDBProvider(dbConn)
 
-	httpClient := http.NewHTTPClient(cfg.HttpClient, &logger)
+	httpClient := http.NewHTTPClient(cfg.HttpClient, log)
 	httpMapperInstance := httpmapper.New()
 
 	someService := ihttpservice.NewService(cfg.SomeHttpService, httpClient)
-	clinicsUseCaseInstance := clinics.NewUseCase(goExampleDBProvider, logger, someService, cfg)
+	clinicsUseCaseInstance := clinics.NewUseCase(goExampleDBProvider, *log, someService, cfg)
 
 	grpcPortListener, err := NewGRPCPortListener(cfg.GRPCServer)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Error(err.Error())
 	}
 	defer func() {
 		err := grpcPortListener.Close()
 		if err != nil {
-			logger.Error(err.Error())
+			log.Error(err.Error())
 		}
 	}()
 
 	clinicServerInstance := grpcserver.NewClinicServer(
-		&logger,
+		log,
 		validatorInstance,
 		mapperInstance,
 		clinicsUseCaseInstance)
 	healthcheck := health.NewServer()
-	grpcServer, err := NewGRPCServer(cfg.GRPCServer, &logger)
+	grpcServer, err := NewGRPCServer(cfg.GRPCServer, log)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Error(err.Error())
 	}
 	pb.RegisterClinicsServer(grpcServer, clinicServerInstance)
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthcheck)
@@ -79,33 +83,33 @@ func RunService(ctx context.Context, cfg *config.Values, logger slog.Logger) {
 	go func() {
 		err = grpcServer.Serve(grpcPortListener)
 		if err != nil {
-			logger.Error(err.Error())
+			log.Error(err.Error())
 		}
 	}()
 
 	_ = httpserver.NewHttpServer(
-		logger,
+		*log,
 		chiRouter,
 		cfg.HttpServer,
 		httpMapperInstance,
 		validatorInstance,
 		clinicsUseCaseInstance,
 	)
-	fmt.Println("app service is running")
+	log.Info("app service started")
 	select {
 	case v := <-exit:
-		logger.Warn(fmt.Sprintf("signal.Notify: %v", v))
+		log.Warn(fmt.Sprintf("signal.Notify: %v", v))
 	case done := <-ctx.Done():
-		logger.Error("ctx.Done: %v", done)
+		log.Error("ctx.Done: %v", done)
 	}
 	grpcServer.GracefulStop()
 
 	if err := httpServer.Shutdown(ctx); err != nil {
-		logger.Error(err.Error(), "failed to shutdown http server")
+		log.Error(err.Error(), "failed to shutdown http server")
 	}
 
 	if err := dbConn.CloseConnections(); err != nil {
-		logger.Error(err.Error(), "failed to close database connection")
+		log.Error(err.Error(), "failed to close database connection")
 	}
-	logger.Info("Server Exited Properly")
+	log.Info("Server Exited Properly")
 }

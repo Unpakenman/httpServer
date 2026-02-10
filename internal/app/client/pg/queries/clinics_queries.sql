@@ -20,8 +20,9 @@ RETURNING {{template "Patients"}}
 INSERT INTO clinics.clinics(
     clinic_address,
     email,
-    opening_hours
+    opening_hours,
+    phone,
     created_at
-)VALUES ($1, $2, $3, NOW())
+)VALUES ($1, $2, $3, $4, NOW())
 RETURNING {{template "Clinics"}}
 {{end}}
