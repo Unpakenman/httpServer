@@ -3,6 +3,7 @@ package pg
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io/fs"
 	"strconv"
@@ -88,6 +89,7 @@ type PGClient interface {
 		name string,
 		params map[string]interface{},
 	) (string, error)
+	WithTransaction(ctx context.Context, fn func(context.Context, Transaction) error) (err error)
 }
 
 // Transaction wrap sqlx.Tx
@@ -350,4 +352,34 @@ func (c *Client) GetQueryByName(
 	params map[string]interface{},
 ) (string, error) {
 	return c.parser.Exec(name, params)
+}
+
+func (c *Client) WithTransaction(ctx context.Context, fn func(context.Context, Transaction) error) (err error) {
+	tx, err := c.BeginTransaction()
+	if err != nil {
+		return fmt.Errorf("begin transaction %w", err)
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			_ = tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			if rbErr := tx.Rollback(); rbErr != nil {
+				err = errors.Join(err, fmt.Errorf("rollback failed %w", rbErr))
+			}
+		}
+	}()
+
+	err = fn(ctx, tx)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		err = fmt.Errorf("commit failed: %w", err)
+	}
+
+	return
 }

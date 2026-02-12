@@ -30,14 +30,15 @@ func RunService(ctx context.Context, cfg *config.Values) {
 			Level: slog.LevelInfo,
 		}),
 	)
+	exit := make(chan os.Signal, 1)
 	chiRouter := NewChiRouter()
 	httpConfig := cfg.HttpServer
 
 	httpServer, err := RunHTTPServer(chiRouter, *log, httpConfig)
 	if err != nil {
 		log.Error(err.Error())
+		os.Exit(1)
 	}
-
 	mapperInstance := mapper.New()
 	validatorInstance := validator.New()
 	dbConn, err := pg.New(cfg.ClinicsDB)
@@ -77,13 +78,12 @@ func RunService(ctx context.Context, cfg *config.Values) {
 	pb.RegisterClinicsServer(grpcServer, clinicServerInstance)
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthcheck)
 	reflection.Register(grpcServer)
-	exit := make(chan os.Signal, 1)
+
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
-		err = grpcServer.Serve(grpcPortListener)
-		if err != nil {
-			log.Error(err.Error())
+		if err := grpcServer.Serve(grpcPortListener); err != nil {
+			log.Error("grpc serve failed", "err", err)
 		}
 	}()
 
@@ -100,7 +100,7 @@ func RunService(ctx context.Context, cfg *config.Values) {
 	case v := <-exit:
 		log.Warn(fmt.Sprintf("signal.Notify: %v", v))
 	case done := <-ctx.Done():
-		log.Error("ctx.Done: %v", done)
+		log.InfoContext(ctx, "ctx.Done: ", done)
 	}
 	grpcServer.GracefulStop()
 
