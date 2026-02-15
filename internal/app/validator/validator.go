@@ -12,6 +12,7 @@ type Validator interface {
 	CreatePatient(data models.CreatePatientRequest) error
 	AddClinic(req *pb.AddClinicRequest) *[]localerrors.FieldViolation
 	AddEmployee(req *pb.AddEmployeeRequest) error
+	AddAppointment(req *pb.AddAppointmentRequest) *[]localerrors.FieldViolation
 }
 
 func New() Validator {

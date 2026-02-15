@@ -33,3 +33,15 @@
     email,
     hire_date
  {{end}}
+
+{{define "Appointments"}}
+   appointment_id,
+   clinic_id,
+   patient_id,
+   employee_id,
+   appointment_dttm,
+   created_at,
+   status,
+   comment
+{{end}}
+

@@ -41,3 +41,16 @@ INSERT INTO clinics.employees(
 )VALUES($1, $2, $3, $4, $5, $6, $7, $8, NOW())
 RETURNING {{template "Employees"}}
 {{end}}
+
+{{define "CreateAppointment"}}
+INSERT INTO clinics.appointments(
+  clinic_id,
+  patient_id,
+  employee_id,
+  appointment_dttm,
+  comment
+)VALUES($1, $2, $3, $4, $5)
+RETURNING {{template "Appointments"}}
+{{end}}
+
+

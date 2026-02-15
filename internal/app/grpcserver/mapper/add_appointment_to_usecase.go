@@ -15,7 +15,7 @@ func (m *mapper) ProtoToAddAppointmentRequest(req *pb.AddAppointmentRequest) cli
 	}
 }
 
-func (m *mapper) AddAppointmentResponseToProtoResponse(resp clinics.AddAppointmentResponse) *pb.AddAppointmentResponse {
+func (m *mapper) AddAppointmentResponseToProtoResponse(resp *clinics.AddAppointmentResponse) *pb.AddAppointmentResponse {
 	return &pb.AddAppointmentResponse{
 		AppointmentId: resp.AppointmentId,
 	}

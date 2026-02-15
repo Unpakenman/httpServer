@@ -35,3 +35,7 @@ func (s *ClinicServer) AddClinic(ctx context.Context, req *rpc.AddClinicRequest)
 func (s *ClinicServer) AddEmployee(ctx context.Context, req *rpc.AddEmployeeRequest) (*rpc.AddEmployeeResponse, error) {
 	return s.inner.AddEmployee(ctx, req)
 }
+
+func (s *ClinicServer) AddAppointment(ctx context.Context, req *rpc.AddAppointmentRequest) (*rpc.AddAppointmentResponse, error) {
+	return s.inner.AddAppointment(ctx, req)
+}
