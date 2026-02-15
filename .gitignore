@@ -1,0 +1,50 @@
+# IDE project files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.DS_Store
+*.back
+*.back.*
+
+# asdf version manager, set version go for folder
+.tool-versions
+
+# Files for development
+*.todo
+*.dev.*
+*_dev*
+*.development.*
+*_development*
+
+# Folders for development
+local/
+dev/
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+vendor.pb/
+
+# Go workspace file
+go.work
+
+# For utils and builds
+bin/
+
+# Env files
+.env
