@@ -3,6 +3,7 @@ package clinics
 import (
 	"context"
 	"httpServer/internal/app/config"
+	localerrors "httpServer/internal/app/errors"
 	ihttpservice "httpServer/internal/app/internal_services/internal_http_service"
 	"httpServer/internal/app/provider"
 	"log/slog"
@@ -30,10 +31,7 @@ func NewUseCase(
 }
 
 type UseCase interface {
-	CreatePatient(
-		ctx context.Context,
-		req CreatePatientRequest) (CreatePatientResponse, error)
-	AddClinic(
-		ctx context.Context,
-		req AddClinicRequest) (AddClinicResponse, error)
+	CreatePatient(ctx context.Context, req CreatePatientRequest) (CreatePatientResponse, error)
+	AddClinic(ctx context.Context, req AddClinicRequest) (*AddClinicResponse, localerrors.Error)
+	AddEmployee(ctx context.Context, req AddEmployeeRequest) (AddEmployeeResponse, error)
 }

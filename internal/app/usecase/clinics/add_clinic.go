@@ -2,6 +2,7 @@ package clinics
 
 import (
 	"context"
+	localerrors "httpServer/internal/app/errors"
 	"httpServer/internal/app/provider"
 	"strconv"
 )
@@ -19,7 +20,7 @@ type AddClinicResponse struct {
 
 func (u *clinicsUseCase) AddClinic(
 	ctx context.Context,
-	req AddClinicRequest) (AddClinicResponse, error) {
+	req AddClinicRequest) (*AddClinicResponse, localerrors.Error) {
 	result, err := u.provider.CreateClinic(ctx, nil, provider.CreateClinicRequest{
 		ClinicAddress: req.ClinicAdress,
 		Phone:         req.Phone,
@@ -27,12 +28,10 @@ func (u *clinicsUseCase) AddClinic(
 		OpeningHours:  req.OpeningHours,
 	})
 	if err != nil {
-		return AddClinicResponse{
-			ClinicId: "0",
-		}, err
+		return nil, localerrors.NewInternalErr(err)
 	}
 	clinicIdResp := strconv.FormatInt(result.ClinicID, 10)
-	return AddClinicResponse{
+	return &AddClinicResponse{
 		ClinicId: clinicIdResp,
 	}, nil
 }

@@ -31,7 +31,7 @@ func (p *goExampleDBProvider) CreateClinic(
 		data.Email,
 		data.OpeningHours)
 	if err != nil {
-		return clinicData, fmt.Errorf("CreatePatient query %w", err)
+		return clinicData, fmt.Errorf("CreateClinic query error: %w", err)
 	}
 	return clinicData, nil
 }

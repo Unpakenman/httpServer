@@ -30,7 +30,7 @@ func (u *clinicsUseCase) CreatePatient(
 	result, err := u.provider.CreatePatient(
 		ctx,
 		nil,
-		provider.CreatePatient{
+		provider.CreatePatientRequest{
 			FirstName:      req.FirstName,
 			LastName:       req.LastName,
 			MiddleName:     req.MiddleName,

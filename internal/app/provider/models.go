@@ -16,11 +16,16 @@ type GoExampleProvider interface {
 	CreatePatient(
 		ctx context.Context,
 		tx pgclient.Transaction,
-		data CreatePatient,
+		data CreatePatientRequest,
 	) (models.Patients, error)
 	CreateClinic(
 		ctx context.Context,
 		tx pgclient.Transaction,
 		data CreateClinicRequest,
 	) (models.Clinic, error)
+	AddEmployee(
+		ctx context.Context,
+		tx pgclient.Transaction,
+		data CreateAddEmployeeRequest,
+	) (models.Employees, error)
 }
