@@ -12,7 +12,7 @@ type AddAppointmentRequest struct {
 	ClinicId        int64
 	PatientId       int64
 	EmployeeId      int64
-	AppointmentDTTM string
+	AppointmentDTTM time.Time
 	Comment         string
 }
 
@@ -24,12 +24,6 @@ func (u *clinicsUseCase) AddAppointment(
 	ctx context.Context,
 	req AddAppointmentRequest,
 ) (*AddAppointmentResponse, localerrors.Error) {
-	// TODO: Перенести в маппер
-	appointmentDttm, err := time.Parse("2006-01-02T15:04:05Z", req.AppointmentDTTM)
-	if err != nil {
-		u.logger.ErrorCtx(ctx, err, "Failed to parse appointmentDttm")
-		return &AddAppointmentResponse{}, localerrors.NewInternalErr(err)
-	}
 	result, err := u.provider.AddAppointment(
 		ctx,
 		nil,
@@ -37,7 +31,7 @@ func (u *clinicsUseCase) AddAppointment(
 			ClinicId:        req.ClinicId,
 			PatientId:       req.PatientId,
 			EmployeeId:      req.EmployeeId,
-			AppointmentDttm: appointmentDttm,
+			AppointmentDttm: req.AppointmentDTTM,
 			Comment:         req.Comment,
 		})
 	if err != nil {

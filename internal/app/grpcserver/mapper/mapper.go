@@ -8,7 +8,7 @@ import (
 type mapper struct{}
 
 type Mapper interface {
-	ProtoToAddAppointmentRequest(req *pb.AddAppointmentRequest) clinics.AddAppointmentRequest
+	ProtoToAddAppointmentRequest(req *pb.AddAppointmentRequest) (clinics.AddAppointmentRequest, error)
 	AddAppointmentResponseToProtoResponse(resp *clinics.AddAppointmentResponse) *pb.AddAppointmentResponse
 	ProtoToAddClinicRequest(req *pb.AddClinicRequest) clinics.AddClinicRequest
 	AddClinicResponseToProtoResponse(resp clinics.AddClinicResponse) *pb.AddClinicResponse
