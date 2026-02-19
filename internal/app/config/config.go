@@ -11,6 +11,7 @@ import (
 type Values struct {
 	HttpServer      *HTTPServerConfig      `envconfig:"HTTP" required:"true"`
 	ClinicsDB       *DBConfig              `envconfig:"DB_CLINICS" required:"true"`
+	LogLevel        string                 `envconfig:"LOG_LEVEL" required:"true"`
 	HttpClient      *HTTPClientConfig      `envconfig:"HTTP_CLIENT" required:"true"`
 	SomeHttpService *SomeHttpServiceConfig `envconfig:"SOME_HTTP_SERVICE" required:"true"`
 	GRPCServer      *GRPCServerConfig      `envconfig:"GRPC_SERVER" required:"true"`

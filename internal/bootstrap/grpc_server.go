@@ -1,11 +1,17 @@
 package bootstrap
 
 import (
+	"context"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/status"
 	"httpServer/internal/app/config"
-	"log/slog"
+	localerrors "httpServer/internal/app/errors"
+	logger "httpServer/internal/app/log"
 	"net"
+	"time"
 )
 
 func NewGRPCPortListener(cfg *config.GRPCServerConfig,
@@ -16,12 +22,22 @@ func NewGRPCPortListener(cfg *config.GRPCServerConfig,
 	return net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
 }
 
-func NewGRPCServer(cfg *config.GRPCServerConfig,
-	log *slog.Logger,
-	interceptors ...grpc.ServerOption) (*grpc.Server, error) {
+func NewGRPCServer(
+	cfg *config.GRPCServerConfig,
+	log logger.LogClient,
+	interceptors ...grpc.ServerOption,
+) (*grpc.Server, error) {
 	if cfg == nil {
 		return nil, fmt.Errorf("invalid grpc config")
 	}
+	interceptors = append(interceptors, grpc.ChainUnaryInterceptor(SetRequestIDMW(log)))
+	interceptors = append(interceptors, grpc.ChainUnaryInterceptor(LoggingAndTracingMW(log)))
+	interceptors = append(interceptors, grpc.KeepaliveParams(keepalive.ServerParameters{
+		MaxConnectionIdle: cfg.KeepaliveMaxConnectionIdle,
+		Timeout:           cfg.KeepaliveTimeout,
+		MaxConnectionAge:  cfg.KeepaliveMaxConnectionAge,
+		Time:              cfg.KeepaliveTime,
+	}))
 	grpcServer := grpc.NewServer(interceptors...)
 	return grpcServer, nil
 }
@@ -34,4 +50,60 @@ type GRPCResponseError[T any] struct {
 	Code    int32
 	Message string
 	Details T
+}
+
+func SetRequestIDMW(
+	logger logger.LogClient,
+) grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req interface{},
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (interface{}, error) {
+		return handler(ctx, req)
+	}
+}
+
+func LoggingAndTracingMW(
+	logger logger.LogClient,
+) grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req interface{},
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (interface{}, error) {
+		defer localerrors.RecoverHandler(ctx, logger)()
+		methodName := "invalid name"
+		if info != nil {
+			methodName = info.FullMethod
+		} else {
+			logger.ErrorMessage("invalid grpc method name", req)
+		}
+
+		logger.InfoCtx(ctx, "grpc_server.request method: "+methodName, req)
+
+		start := time.Now()
+		reply, errReply := handler(ctx, req)
+		duration := time.Since(start)
+
+		var code codes.Code
+		if errReply != nil {
+			code = status.Code(errReply)
+		} else {
+			code = codes.OK
+		}
+
+		requestInfoText := fmt.Sprintf(
+			"grpc_server.response method: %s, time spent: %v, code: %s",
+			methodName,
+			duration,
+			code.String(),
+		)
+
+		logger.InfoCtx(ctx, requestInfoText, reply)
+
+		return reply, errReply
+	}
 }

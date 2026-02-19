@@ -7,7 +7,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"httpServer/internal/app/config"
-	"log/slog"
+	logger "httpServer/internal/app/log"
 	"net/http"
 )
 
@@ -24,7 +24,7 @@ type client struct {
 
 func NewHTTPClient(
 	cfg *config.HTTPClientConfig,
-	log *slog.Logger,
+	log logger.LogClient,
 ) Client {
 
 	return &client{

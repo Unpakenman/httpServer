@@ -7,9 +7,9 @@ import (
 	"httpServer/internal/app/httpserver/clinics"
 	"httpServer/internal/app/httpserver/mapper"
 	"httpServer/internal/app/httpserver/middleware"
+	"httpServer/internal/app/log"
 	useCase "httpServer/internal/app/usecase/clinics"
 	"httpServer/internal/app/validator"
-	"log/slog"
 )
 
 type HttpServer interface {
@@ -20,7 +20,7 @@ type httpServer struct {
 }
 
 func NewHttpServer(
-	logger slog.Logger,
+	logger log.LogClient,
 	chiRouter *chi.Mux,
 	httpConfig *config.HTTPServerConfig,
 	mapperInstance mapper.Mapper,
@@ -30,6 +30,7 @@ func NewHttpServer(
 	chiRouter.Use(chimiddleware.Recoverer)
 	apiGroup := chiRouter.Route(httpConfig.ApiDefaultPath, func(apiGroup chi.Router) {
 		apiGroup.Use(middleware.OtelhttpLabelerMiddleware)
+		apiGroup.Use(middleware.CommonMiddleware(logger))
 	})
 
 	return &httpServer{

@@ -17,5 +17,5 @@ type CreatePatientRequest struct {
 
 type CreatePatientResponse struct {
 	Status    string  `json:"status"`
-	PatientId *string `json:"patient_id"`
+	PatientID *string `json:"patient_id"`
 }

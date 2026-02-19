@@ -6,9 +6,9 @@ import (
 	rpc "github.com/Unpakenman/protos/gen/go/sso/rpc"
 	"httpServer/internal/app/grpcserver/clinic"
 	"httpServer/internal/app/grpcserver/mapper"
+	logger "httpServer/internal/app/log"
 	"httpServer/internal/app/usecase/clinics"
 	"httpServer/internal/app/validator"
-	"log/slog"
 )
 
 type ClinicServer struct {
@@ -17,7 +17,7 @@ type ClinicServer struct {
 }
 
 func NewClinicServer(
-	logger *slog.Logger,
+	logger logger.LogClient,
 	validator validator.Validator,
 	mapper mapper.Mapper,
 	clinicUseCase clinics.UseCase,

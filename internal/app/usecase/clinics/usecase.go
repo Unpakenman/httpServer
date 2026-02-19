@@ -5,20 +5,20 @@ import (
 	"httpServer/internal/app/config"
 	localerrors "httpServer/internal/app/errors"
 	ihttpservice "httpServer/internal/app/internal_services/internal_http_service"
+	logger "httpServer/internal/app/log"
 	"httpServer/internal/app/provider"
-	"log/slog"
 )
 
 type clinicsUseCase struct {
 	provider        provider.GoExampleProvider
-	logger          slog.Logger
+	logger          logger.LogClient
 	internalService ihttpservice.Service
 	config          *config.Values
 }
 
 func NewUseCase(
 	provider provider.GoExampleProvider,
-	logger slog.Logger,
+	logger logger.LogClient,
 	internalService ihttpservice.Service,
 	config *config.Values,
 ) UseCase {

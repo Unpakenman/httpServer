@@ -3,7 +3,6 @@ package clinics
 import (
 	"context"
 	"httpServer/internal/app/provider"
-	"strconv"
 	"time"
 )
 
@@ -21,35 +20,30 @@ type CreatePatientRequest struct {
 }
 
 type CreatePatientResponse struct {
-	PatientId string
+	PatientID int64
 }
 
 func (u *clinicsUseCase) CreatePatient(
 	ctx context.Context,
-	req CreatePatientRequest) (CreatePatientResponse, error) {
-	result, err := u.provider.CreatePatient(
-		ctx,
-		nil,
-		provider.CreatePatientRequest{
-			FirstName:      req.FirstName,
-			LastName:       req.LastName,
-			MiddleName:     req.MiddleName,
-			DocumentType:   req.DocumentType,
-			DocumentSeries: req.DocumentSeries,
-			DocumentNumber: req.DocumentNumber,
-			Sex:            req.Sex,
-			BirthDate:      req.BirthDate,
-			PhoneNumber:    req.PhoneNumber,
-			Email:          req.Email,
-		},
-	)
+	req CreatePatientRequest,
+) (CreatePatientResponse, error) {
+	result, err := u.provider.CreatePatient(ctx, nil, provider.CreatePatientRequest{
+		FirstName:      req.FirstName,
+		LastName:       req.LastName,
+		MiddleName:     req.MiddleName,
+		DocumentType:   req.DocumentType,
+		DocumentSeries: req.DocumentSeries,
+		DocumentNumber: req.DocumentNumber,
+		Sex:            req.Sex,
+		BirthDate:      req.BirthDate,
+		PhoneNumber:    req.PhoneNumber,
+		Email:          req.Email,
+	})
 	if err != nil {
-		return CreatePatientResponse{
-			PatientId: "0",
-		}, err
+		return CreatePatientResponse{}, err
 	}
-	patientId := strconv.FormatInt(result.PatientID, 10)
+
 	return CreatePatientResponse{
-		PatientId: patientId,
+		PatientID: result.PatientID,
 	}, nil
 }

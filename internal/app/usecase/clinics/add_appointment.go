@@ -2,6 +2,7 @@ package clinics
 
 import (
 	"context"
+	"fmt"
 	localerrors "httpServer/internal/app/errors"
 	"httpServer/internal/app/provider"
 	"time"
@@ -21,10 +22,12 @@ type AddAppointmentResponse struct {
 
 func (u *clinicsUseCase) AddAppointment(
 	ctx context.Context,
-	req AddAppointmentRequest) (*AddAppointmentResponse, localerrors.Error) {
+	req AddAppointmentRequest,
+) (*AddAppointmentResponse, localerrors.Error) {
+	// TODO: Перенести в маппер
 	appointmentDttm, err := time.Parse("2006-01-02T15:04:05Z", req.AppointmentDTTM)
 	if err != nil {
-		u.logger.ErrorContext(ctx, "Failed to parse appointmentDttm")
+		u.logger.ErrorCtx(ctx, err, "Failed to parse appointmentDttm")
 		return &AddAppointmentResponse{}, localerrors.NewInternalErr(err)
 	}
 	result, err := u.provider.AddAppointment(
@@ -38,8 +41,7 @@ func (u *clinicsUseCase) AddAppointment(
 			Comment:         req.Comment,
 		})
 	if err != nil {
-		u.logger.ErrorContext(ctx, "Failed to add appointment")
-		return nil, localerrors.NewInternalErr(err)
+		return nil, localerrors.NewInternalErr(fmt.Errorf("AddAppointment error: %w", err))
 	}
 	return &AddAppointmentResponse{
 		AppointmentId: result.AppointmentId,

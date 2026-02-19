@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"httpServer/internal/app/config"
-	"log/slog"
+	logger "httpServer/internal/app/log"
 	"net/http"
 	"time"
 )
@@ -16,7 +16,7 @@ func NewChiRouter() *chi.Mux {
 
 func RunHTTPServer(
 	chiRouter *chi.Mux,
-	logger slog.Logger,
+	logger logger.LogClient,
 	cfg *config.HTTPServerConfig,
 ) (*http.Server, error) {
 	if cfg == nil {
@@ -31,7 +31,7 @@ func RunHTTPServer(
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Error(err.Error())
+			logger.Error(err)
 		}
 	}()
 
