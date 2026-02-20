@@ -2,22 +2,25 @@ package clinic
 
 import (
 	"context"
-	"fmt"
 	pb "github.com/Unpakenman/protos/gen/go/sso/rpc"
+	localerrors "httpServer/internal/app/errors"
 )
 
 func (s *ServerClinic) AddEmployee(
 	ctx context.Context,
 	req *pb.AddEmployeeRequest,
 ) (*pb.AddEmployeeResponse, error) {
-	fmt.Println("AddEmployee called")
-	if err := s.validator.AddEmployee(req); err != nil {
-		return nil, fmt.Errorf("Ошибка валидации  %w", err)
+	if errs := s.validator.AddEmployee(req); errs != nil {
+		err := localerrors.NewInvalidArgumentErr(*errs)
+		s.log.InfoCtx(ctx, "AddEmployee validation error: ", err)
+		return nil, s.mapper.ResultErrorToProto(err)
 	}
 	useCaseReq := s.mapper.ProtoToAddEmployeeRequest(req)
-	useCaseResp, useCaseErr := s.clinicUseCase.AddEmployee(ctx, useCaseReq)
-	if useCaseErr != nil {
-		return nil, fmt.Errorf("UseCase AddEmployee error  %w", useCaseErr)
+	useCaseResp, err := s.clinicUseCase.AddEmployee(ctx, useCaseReq)
+	if err != nil {
+		s.log.ErrorCtx(ctx, err, "AddEmployee UseCaseError")
+		return nil, err
+
 	}
 	response := s.mapper.AddEmployeeResponseToProtoResponse(useCaseResp)
 	return response, nil

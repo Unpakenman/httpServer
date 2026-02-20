@@ -12,11 +12,10 @@ func (s *ServerClinic) AddAppointment(
 	ctx context.Context,
 	req *pb.AddAppointmentRequest,
 ) (*pb.AddAppointmentResponse, error) {
-	s.log.InfoCtx(ctx, "AddAppointment called")
 	if errs := s.validator.AddAppointment(req); errs != nil {
 		err := localerrors.NewInvalidArgumentErr(*errs)
 		s.log.InfoCtx(ctx, "AddClinic validation error: ", err)
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, s.mapper.ResultErrorToProto(err)
 	}
 	useCaseReq, err := s.mapper.ProtoToAddAppointmentRequest(req)
 	if err != nil {
@@ -25,7 +24,7 @@ func (s *ServerClinic) AddAppointment(
 	useCaseResp, err := s.clinicUseCase.AddAppointment(ctx, useCaseReq)
 	if err != nil {
 		s.log.ErrorCtx(ctx, err)
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, err
 	}
 	response := s.mapper.AddAppointmentResponseToProtoResponse(useCaseResp)
 	return response, nil

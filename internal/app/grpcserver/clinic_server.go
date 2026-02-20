@@ -1,9 +1,7 @@
 package grpcserver
 
 import (
-	"context"
 	pb "github.com/Unpakenman/protos/gen/go/sso"
-	rpc "github.com/Unpakenman/protos/gen/go/sso/rpc"
 	"httpServer/internal/app/grpcserver/clinic"
 	"httpServer/internal/app/grpcserver/mapper"
 	logger "httpServer/internal/app/log"
@@ -12,8 +10,7 @@ import (
 )
 
 type ClinicServer struct {
-	pb.UnimplementedClinicsServer
-	inner *clinic.ServerClinic
+	*clinic.ServerClinic
 }
 
 func NewClinicServer(
@@ -22,20 +19,7 @@ func NewClinicServer(
 	mapper mapper.Mapper,
 	clinicUseCase clinics.UseCase,
 ) pb.ClinicsServer {
-	serverClinic := clinic.NewServer(logger, validator, mapper, clinicUseCase)
 	return &ClinicServer{
-		inner: serverClinic,
+		clinic.NewServer(logger, validator, mapper, clinicUseCase),
 	}
-}
-
-func (s *ClinicServer) AddClinic(ctx context.Context, req *rpc.AddClinicRequest) (*rpc.AddClinicResponse, error) {
-	return s.inner.AddClinic(ctx, req)
-}
-
-func (s *ClinicServer) AddEmployee(ctx context.Context, req *rpc.AddEmployeeRequest) (*rpc.AddEmployeeResponse, error) {
-	return s.inner.AddEmployee(ctx, req)
-}
-
-func (s *ClinicServer) AddAppointment(ctx context.Context, req *rpc.AddAppointmentRequest) (*rpc.AddAppointmentResponse, error) {
-	return s.inner.AddAppointment(ctx, req)
 }

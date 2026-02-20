@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"httpServer/internal/app/log/options"
 	"runtime/debug"
 )
 
@@ -14,30 +15,30 @@ func (c contextKey) String() string {
 }
 
 func (l *commonLogger) InfoCtx(ctx context.Context, msg string, fields ...interface{}) {
-	l.setFieldsWithContext(ctx, WithExtras(fields)).Info(msg)
+	l.setFieldsWithContext(ctx, options.WithExtras(fields)).Info(msg)
 }
 
 func (l *commonLogger) TraceCtx(ctx context.Context, msg string, fields ...interface{}) {
-	l.setFieldsWithContext(ctx, WithExtras(fields)).Trace(msg)
+	l.setFieldsWithContext(ctx, options.WithExtras(fields)).Trace(msg)
 }
 
 func (l *commonLogger) WarnCtx(ctx context.Context, msg string, fields ...interface{}) {
-	l.setFieldsWithContext(ctx, WithExtras(fields)).Warn(msg)
+	l.setFieldsWithContext(ctx, options.WithExtras(fields)).Warn(msg)
 }
 
 func (l *commonLogger) DebugCtx(ctx context.Context, msg string, fields ...interface{}) {
-	l.setFieldsWithContext(ctx, WithExtras(fields)).Debug(msg)
+	l.setFieldsWithContext(ctx, options.WithExtras(fields)).Debug(msg)
 }
 
 func (l *commonLogger) ErrorMessageCtx(ctx context.Context, msg string, fields ...interface{}) {
-	l.setFieldsWithContext(ctx, WithException(&ExceptionData{
+	l.setFieldsWithContext(ctx, options.WithException(&options.ExceptionData{
 		Message: msg,
 	})).Error()
 }
 
 func (l *commonLogger) ErrorCtx(ctx context.Context, err error, fields ...interface{}) {
 
-	l.setFieldsWithContext(ctx, WithException(&ExceptionData{
+	l.setFieldsWithContext(ctx, options.WithException(&options.ExceptionData{
 		Type:       fmt.Sprintf("%T", err),
 		Message:    err.Error(),
 		Stacktrace: l.formatLogStack(string(debug.Stack())),
@@ -45,7 +46,7 @@ func (l *commonLogger) ErrorCtx(ctx context.Context, err error, fields ...interf
 }
 
 func (l *commonLogger) FatalCtx(ctx context.Context, err error, fields ...interface{}) {
-	l.setFieldsWithContext(ctx, WithException(&ExceptionData{
+	l.setFieldsWithContext(ctx, options.WithException(&options.ExceptionData{
 		Type:       fmt.Sprintf("%T", err),
 		Message:    err.Error(),
 		Stacktrace: l.formatLogStack(string(debug.Stack())),
@@ -53,15 +54,15 @@ func (l *commonLogger) FatalCtx(ctx context.Context, err error, fields ...interf
 }
 
 func (l *commonLogger) PanicCtx(ctx context.Context, err error, fields ...interface{}) {
-	l.setFieldsWithContext(ctx, WithException(&ExceptionData{
+	l.setFieldsWithContext(ctx, options.WithException(&options.ExceptionData{
 		Type:       fmt.Sprintf("%T", err),
 		Message:    err.Error(),
 		Stacktrace: l.formatLogStack(string(debug.Stack())),
 	})).Panic()
 }
 
-func (l *commonLogger) SetOptionsToCtx(ctx context.Context, optValues ...LoggerOption) context.Context {
-	opts := &LoggerOptions{}
+func (l *commonLogger) SetOptionsToCtx(ctx context.Context, optValues ...options.LoggerOption) context.Context {
+	opts := &options.LoggerOptions{}
 	optsFromCtx := l.OptionsFromCtx(ctx)
 	if optsFromCtx != nil {
 		opts = optsFromCtx
@@ -72,19 +73,19 @@ func (l *commonLogger) SetOptionsToCtx(ctx context.Context, optValues ...LoggerO
 	return context.WithValue(ctx, contextKey(LogOptionsContextKey), *opts)
 }
 
-func (l *commonLogger) OptionsFromCtx(ctx context.Context) *LoggerOptions {
+func (l *commonLogger) OptionsFromCtx(ctx context.Context) *options.LoggerOptions {
 	if ctx == nil {
 		return nil
 	}
-	opts, ok := ctx.Value(contextKey(LogOptionsContextKey)).(LoggerOptions)
+	opts, ok := ctx.Value(contextKey(LogOptionsContextKey)).(options.LoggerOptions)
 	if ok {
 		return &opts
 	}
 	return nil
 }
 
-func (l *commonLogger) setFieldsWithContext(ctx context.Context, optValues ...LoggerOption) *logrus.Entry {
-	opts := &LoggerOptions{}
+func (l *commonLogger) setFieldsWithContext(ctx context.Context, optValues ...options.LoggerOption) *logrus.Entry {
+	opts := &options.LoggerOptions{}
 	optsFromCtx := l.OptionsFromCtx(ctx)
 	if optsFromCtx != nil {
 		opts = optsFromCtx
