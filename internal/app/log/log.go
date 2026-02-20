@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"httpServer/internal/app/config"
+	"httpServer/internal/app/log/options"
 	"runtime/debug"
 )
 
@@ -53,8 +54,8 @@ type LogClient interface {
 	Panic(err error, fields ...interface{})
 	Debug(msg string, fields ...interface{})
 
-	SetOptionsToCtx(ctx context.Context, options ...LoggerOption) context.Context
-	OptionsFromCtx(ctx context.Context) *LoggerOptions
+	SetOptionsToCtx(ctx context.Context, options ...options.LoggerOption) context.Context
+	OptionsFromCtx(ctx context.Context) *options.LoggerOptions
 
 	InfoCtx(ctx context.Context, msg string, fields ...interface{})
 	TraceCtx(ctx context.Context, msg string, fields ...interface{})
@@ -67,29 +68,29 @@ type LogClient interface {
 }
 
 func (l *commonLogger) Info(msg string, fields ...interface{}) {
-	l.setFields(WithExtras(fields)).Info(msg)
+	l.setFields(options.WithExtras(fields)).Info(msg)
 }
 
 func (l *commonLogger) Trace(msg string, fields ...interface{}) {
-	l.setFields(WithExtras(fields)).Trace(msg)
+	l.setFields(options.WithExtras(fields)).Trace(msg)
 }
 
 func (l *commonLogger) Warn(msg string, fields ...interface{}) {
-	l.setFields(WithExtras(fields)).Warn(msg)
+	l.setFields(options.WithExtras(fields)).Warn(msg)
 }
 
 func (l *commonLogger) Debug(msg string, fields ...interface{}) {
-	l.setFields(WithExtras(fields)).Debug(msg)
+	l.setFields(options.WithExtras(fields)).Debug(msg)
 }
 
 func (l *commonLogger) ErrorMessage(msg string, fields ...interface{}) {
-	l.setFields(WithException(&ExceptionData{
+	l.setFields(options.WithException(&options.ExceptionData{
 		Message: msg,
 	})).Error()
 }
 
 func (l *commonLogger) Error(err error, fields ...interface{}) {
-	l.setFields(WithException(&ExceptionData{
+	l.setFields(options.WithException(&options.ExceptionData{
 		Type:       fmt.Sprintf("%T", err),
 		Message:    err.Error(),
 		Stacktrace: l.formatLogStack(string(debug.Stack())),
@@ -97,7 +98,7 @@ func (l *commonLogger) Error(err error, fields ...interface{}) {
 }
 
 func (l *commonLogger) Fatal(err error, fields ...interface{}) {
-	l.setFields(WithException(&ExceptionData{
+	l.setFields(options.WithException(&options.ExceptionData{
 		Type:       fmt.Sprintf("%T", err),
 		Message:    err.Error(),
 		Stacktrace: l.formatLogStack(string(debug.Stack())),
@@ -105,7 +106,7 @@ func (l *commonLogger) Fatal(err error, fields ...interface{}) {
 }
 
 func (l *commonLogger) Panic(err error, fields ...interface{}) {
-	l.setFields(WithException(&ExceptionData{
+	l.setFields(options.WithException(&options.ExceptionData{
 		Type:       fmt.Sprintf("%T", err),
 		Message:    err.Error(),
 		Stacktrace: l.formatLogStack(string(debug.Stack())),
@@ -119,8 +120,8 @@ func (l *commonLogger) formatConsoleExtras(extras interface{}) any {
 	return extras
 }
 
-func (l *commonLogger) setFields(optValues ...LoggerOption) *logrus.Entry {
-	opts := &LoggerOptions{}
+func (l *commonLogger) setFields(optValues ...options.LoggerOption) *logrus.Entry {
+	opts := &options.LoggerOptions{}
 	for _, setOption := range optValues {
 		setOption(opts)
 	}

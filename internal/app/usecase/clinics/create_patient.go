@@ -2,6 +2,7 @@ package clinics
 
 import (
 	"context"
+	localerrors "httpServer/internal/app/errors"
 	"httpServer/internal/app/provider"
 	"time"
 )
@@ -26,7 +27,7 @@ type CreatePatientResponse struct {
 func (u *clinicsUseCase) CreatePatient(
 	ctx context.Context,
 	req CreatePatientRequest,
-) (CreatePatientResponse, error) {
+) (CreatePatientResponse, localerrors.Error) {
 	result, err := u.provider.CreatePatient(ctx, nil, provider.CreatePatientRequest{
 		FirstName:      req.FirstName,
 		LastName:       req.LastName,
@@ -40,7 +41,7 @@ func (u *clinicsUseCase) CreatePatient(
 		Email:          req.Email,
 	})
 	if err != nil {
-		return CreatePatientResponse{}, err
+		return CreatePatientResponse{}, localerrors.NewInternalErr(err)
 	}
 
 	return CreatePatientResponse{

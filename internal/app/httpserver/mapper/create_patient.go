@@ -3,7 +3,6 @@ package mapper
 import (
 	"httpServer/internal/app/httpserver/models"
 	"httpServer/internal/app/usecase/clinics"
-	"strconv"
 )
 
 func (m *mapper) HttpToCreatePayinRequest(req models.CreatePatientRequest) clinics.CreatePatientRequest {
@@ -18,13 +17,5 @@ func (m *mapper) HttpToCreatePayinRequest(req models.CreatePatientRequest) clini
 		BirthDate:      req.BirthDate,
 		PhoneNumber:    req.PhoneNumber,
 		Email:          req.Email,
-	}
-}
-
-func (m *mapper) CreatePatientToHttp(response clinics.CreatePatientResponse) models.CreatePatientResponse {
-	patientID := strconv.FormatInt(response.PatientID, 10)
-
-	return models.CreatePatientResponse{
-		PatientID: &patientID,
 	}
 }

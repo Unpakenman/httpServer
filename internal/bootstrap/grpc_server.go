@@ -3,6 +3,8 @@ package bootstrap
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
@@ -10,6 +12,7 @@ import (
 	"httpServer/internal/app/config"
 	localerrors "httpServer/internal/app/errors"
 	logger "httpServer/internal/app/log"
+	logoptions "httpServer/internal/app/log/options"
 	"net"
 	"time"
 )
@@ -61,6 +64,10 @@ func SetRequestIDMW(
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
+		ctx = logger.SetOptionsToCtx(
+			ctx,
+			logoptions.WithRequestID(uuid.New().String()),
+		)
 		return handler(ctx, req)
 	}
 }
@@ -81,6 +88,15 @@ func LoggingAndTracingMW(
 		} else {
 			logger.ErrorMessage("invalid grpc method name", req)
 		}
+
+		span := trace.SpanFromContext(ctx)
+		traceID := span.SpanContext().TraceID().String()
+
+		ctx = logger.SetOptionsToCtx(
+			ctx,
+			logoptions.WithTraceID(traceID),
+			logoptions.WithProtocol(logoptions.GRPCProtocol),
+		)
 
 		logger.InfoCtx(ctx, "grpc_server.request method: "+methodName, req)
 

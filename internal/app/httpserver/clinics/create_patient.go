@@ -5,47 +5,47 @@ import (
 	"httpServer/internal/app/httpserver/models"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (r *httpRouter) CreatePatient(w http.ResponseWriter, req *http.Request) {
 	bodyBytes, readErr := io.ReadAll(req.Body)
 	if readErr != nil {
-		r.logger.ErrorCtx(req.Context(), readErr, "failed to read request body: %w", readErr)
+		r.logger.ErrorCtx(req.Context(), readErr, "failed to read request body")
 		http.Error(w, "BAD_REQUEST", http.StatusBadRequest)
 		return
 	}
 	var request models.CreatePatientRequest
 	requestErr := json.Unmarshal(bodyBytes, &request)
 	if requestErr != nil {
-		r.logger.ErrorCtx(req.Context(), requestErr, "failed to unmarshal request: %w", requestErr)
+		r.logger.ErrorCtx(req.Context(), requestErr, "failed to unmarshal request")
 		http.Error(w, "BAD_REQUEST", http.StatusBadRequest)
 		return
 	}
 
 	if validateErrors := r.validator.CreatePatient(request); validateErrors != nil {
-		r.logger.ErrorCtx(req.Context(), validateErrors, "failed to validate patient: %w", validateErrors)
+		r.logger.ErrorCtx(req.Context(), validateErrors, "failed to validate patient")
 		return
 	}
 	requestCreatePatient := r.mapper.HttpToCreatePayinRequest(request)
 	w.Header().Set("Content-Type", "application/json")
 	response, err := r.usecase.CreatePatient(req.Context(), requestCreatePatient)
 	if err != nil {
-		r.logger.ErrorCtx(req.Context(), err, "failed to create patient:", err)
-		w.WriteHeader(http.StatusBadRequest)
+		r.logger.ErrorCtx(req.Context(), err, "failed to create patient")
+		w.WriteHeader(http.StatusInternalServerError)
 		if encodeErr := json.NewEncoder(w).Encode(models.ErrorResponse{
 			Error: err.Error(),
 		}); encodeErr != nil {
-			r.logger.ErrorCtx(req.Context(), encodeErr, "failed to encode response:", encodeErr)
+			r.logger.ErrorCtx(req.Context(), encodeErr, "failed to encode response")
 		}
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	patient := r.mapper.CreatePatientToHttp(response)
+	patientID := strconv.FormatInt(response.PatientID, 10)
 
 	if encodeErr := json.NewEncoder(w).Encode(models.CreatePatientResponse{
-		Status:    "SUCCESS",
-		PatientID: patient.PatientID,
+		PatientID: &patientID,
 	}); encodeErr != nil {
-		r.logger.ErrorCtx(req.Context(), encodeErr, "failed to encode response:", encodeErr)
+		r.logger.ErrorCtx(req.Context(), encodeErr, "failed to encode response")
 	}
 }

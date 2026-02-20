@@ -11,7 +11,7 @@ type validator struct{}
 type Validator interface {
 	CreatePatient(data models.CreatePatientRequest) error
 	AddClinic(req *pb.AddClinicRequest) *[]localerrors.FieldViolation
-	AddEmployee(req *pb.AddEmployeeRequest) error
+	AddEmployee(req *pb.AddEmployeeRequest) *[]localerrors.FieldViolation
 	AddAppointment(req *pb.AddAppointmentRequest) *[]localerrors.FieldViolation
 }
 

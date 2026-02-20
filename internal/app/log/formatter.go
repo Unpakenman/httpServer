@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"httpServer/internal/app/log/options"
 	"reflect"
 	"runtime"
 
@@ -80,7 +81,7 @@ func (f *JSONFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 		default:
 			if k == LogOptionsField {
-				opts, ok := v.(LoggerOptions)
+				opts, ok := v.(options.LoggerOptions)
 				if ok {
 					showContext := opts.Handler != "" ||
 						opts.RequestID != "" ||

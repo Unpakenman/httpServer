@@ -2,7 +2,7 @@ package clinics
 
 import (
 	"context"
-	"fmt"
+	localerrors "httpServer/internal/app/errors"
 	"httpServer/internal/app/provider"
 )
 
@@ -21,7 +21,9 @@ type AddEmployeeResponse struct {
 	EmployeeId int64
 }
 
-func (u *clinicsUseCase) AddEmployee(ctx context.Context, req AddEmployeeRequest) (AddEmployeeResponse, error) {
+func (u *clinicsUseCase) AddEmployee(
+	ctx context.Context, req AddEmployeeRequest,
+) (*AddEmployeeResponse, localerrors.Error) {
 	result, err := u.provider.AddEmployee(ctx, nil, provider.CreateAddEmployeeRequest{
 		RoleId:           req.RoleId,
 		SpecializationId: req.SpecializationId,
@@ -33,9 +35,9 @@ func (u *clinicsUseCase) AddEmployee(ctx context.Context, req AddEmployeeRequest
 		Email:            req.Email,
 	})
 	if err != nil {
-		return AddEmployeeResponse{}, fmt.Errorf("Failed to create db request  %w", err)
+		return nil, localerrors.NewInternalErr(err)
 	}
-	return AddEmployeeResponse{
+	return &AddEmployeeResponse{
 		EmployeeId: result.EmployeeID,
 	}, nil
 }

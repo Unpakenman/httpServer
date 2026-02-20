@@ -2,7 +2,6 @@ package clinics
 
 import (
 	"context"
-	"fmt"
 	localerrors "httpServer/internal/app/errors"
 	"httpServer/internal/app/provider"
 	"time"
@@ -35,7 +34,7 @@ func (u *clinicsUseCase) AddAppointment(
 			Comment:         req.Comment,
 		})
 	if err != nil {
-		return nil, localerrors.NewInternalErr(fmt.Errorf("AddAppointment error: %w", err))
+		return nil, localerrors.NewInternalErr(err)
 	}
 	return &AddAppointmentResponse{
 		AppointmentId: result.AppointmentId,

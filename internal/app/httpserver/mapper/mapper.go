@@ -8,7 +8,6 @@ import (
 type mapper struct{}
 type Mapper interface {
 	HttpToCreatePayinRequest(req models.CreatePatientRequest) clinics.CreatePatientRequest
-	CreatePatientToHttp(response clinics.CreatePatientResponse) models.CreatePatientResponse
 }
 
 func New() Mapper { return &mapper{} }

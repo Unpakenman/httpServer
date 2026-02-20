@@ -1,4 +1,4 @@
-package log
+package options
 
 type LoggerOptions struct {
 	Extras    any

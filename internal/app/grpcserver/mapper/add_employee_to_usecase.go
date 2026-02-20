@@ -18,7 +18,7 @@ func (m *mapper) ProtoToAddEmployeeRequest(req *pb.AddEmployeeRequest) clinics.A
 	}
 }
 
-func (m *mapper) AddEmployeeResponseToProtoResponse(resp clinics.AddEmployeeResponse) *pb.AddEmployeeResponse {
+func (m *mapper) AddEmployeeResponseToProtoResponse(resp *clinics.AddEmployeeResponse) *pb.AddEmployeeResponse {
 	return &pb.AddEmployeeResponse{
 		EmployeeId: resp.EmployeeId,
 	}

@@ -16,7 +16,7 @@ func (m *mapper) ProtoToAddClinicRequest(req *pb.AddClinicRequest) clinics.AddCl
 	}
 }
 
-func (m *mapper) AddClinicResponseToProtoResponse(resp clinics.AddClinicResponse) *pb.AddClinicResponse {
+func (m *mapper) AddClinicResponseToProtoResponse(resp *clinics.AddClinicResponse) *pb.AddClinicResponse {
 	clinicIdResp, err := strconv.ParseInt(resp.ClinicId, 10, 64)
 	if err != nil {
 		log.Fatalf("could not convert clinic id to int: %v", err)
