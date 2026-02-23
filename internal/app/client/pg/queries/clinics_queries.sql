@@ -54,3 +54,14 @@ RETURNING {{template "Appointments"}}
 {{end}}
 
 
+{{define "CreateNewService"}}
+INSERT INTO clinics.services(
+  name,
+  description,
+  price,
+  duration_minutes,
+  is_active
+)VALUES($1, $2, $3, $4, $5)
+{{end}}
+
+

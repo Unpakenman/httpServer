@@ -10,6 +10,7 @@ import (
 	"httpServer/internal/app/client/http"
 	"httpServer/internal/app/client/pg"
 	"httpServer/internal/app/config"
+	eventshandlers "httpServer/internal/app/events/handlers"
 	"httpServer/internal/app/grpcserver"
 	"httpServer/internal/app/grpcserver/mapper"
 	"httpServer/internal/app/httpserver"
@@ -17,6 +18,8 @@ import (
 	ihttpservice "httpServer/internal/app/internal_services/internal_http_service"
 	logger "httpServer/internal/app/log"
 	"httpServer/internal/app/provider"
+	"httpServer/internal/app/rabbitmq_service"
+	rabbitmq "httpServer/internal/app/rabbitmq_service/client"
 	"httpServer/internal/app/usecase/clinics"
 	"httpServer/internal/app/validator"
 	"os"
@@ -44,11 +47,24 @@ func RunService(ctx context.Context, cfg *config.Values, log logger.LogClient) {
 
 	goExampleDBProvider := provider.NewGoExampleDBProvider(dbConn)
 
+	rmqClientStop := make(chan bool)
+	rmqClient, err := NewRMQClient(rmqClientStop, cfg, log)
+	if err != nil {
+		log.Fatal(err)
+	}
+	rmqSms, err := rabbitmq.NewPublisher(rmqClient, cfg.AMQPServer.SmsQueue)
+	if err != nil {
+		log.Fatal(err)
+	}
+	rmqService := rabbitmq_service.NewRMQService(rmqSms)
+
 	httpClient := http.NewHTTPClient(cfg.HttpClient, log)
 	httpMapperInstance := httpmapper.New()
 
 	someService := ihttpservice.NewService(cfg.SomeHttpService, httpClient)
-	clinicsUseCaseInstance := clinics.NewUseCase(goExampleDBProvider, log, someService, cfg)
+	clinicsUseCaseInstance := clinics.NewUseCase(goExampleDBProvider, log, someService, rmqService, cfg)
+
+	eventHandlers := eventshandlers.NewHandlerList(log, clinicsUseCaseInstance)
 
 	grpcPortListener, err := NewGRPCPortListener(cfg.GRPCServer)
 	if err != nil {
@@ -83,6 +99,12 @@ func RunService(ctx context.Context, cfg *config.Values, log logger.LogClient) {
 		}
 	}()
 
+	stopEventListener := RunEventListner(
+		rmqClient,
+		*cfg,
+		log,
+		eventHandlers)
+
 	_ = httpserver.NewHttpServer(
 		log,
 		chiRouter,
@@ -99,6 +121,7 @@ func RunService(ctx context.Context, cfg *config.Values, log logger.LogClient) {
 		log.InfoCtx(ctx, "ctx.Done: ", done)
 	}
 	grpcServer.GracefulStop()
+	stopEventListener()
 
 	if err := httpServer.Shutdown(ctx); err != nil {
 		log.Error(err, "failed to shutdown http server")
