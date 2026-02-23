@@ -7,12 +7,14 @@ import (
 	ihttpservice "httpServer/internal/app/internal_services/internal_http_service"
 	logger "httpServer/internal/app/log"
 	"httpServer/internal/app/provider"
+	"httpServer/internal/app/rabbitmq_service"
 )
 
 type clinicsUseCase struct {
 	provider        provider.GoExampleProvider
 	logger          logger.LogClient
 	internalService ihttpservice.Service
+	rmqService      rabbitmq_service.RMQService
 	config          *config.Values
 }
 
@@ -20,12 +22,14 @@ func NewUseCase(
 	provider provider.GoExampleProvider,
 	logger logger.LogClient,
 	internalService ihttpservice.Service,
+	rmqService rabbitmq_service.RMQService,
 	config *config.Values,
 ) UseCase {
 	return &clinicsUseCase{
 		provider:        provider,
 		logger:          logger,
 		internalService: internalService,
+		rmqService:      rmqService,
 		config:          config,
 	}
 }
@@ -35,4 +39,5 @@ type UseCase interface {
 	AddClinic(ctx context.Context, req AddClinicRequest) (*AddClinicResponse, localerrors.Error)
 	AddEmployee(ctx context.Context, req AddEmployeeRequest) (*AddEmployeeResponse, localerrors.Error)
 	AddAppointment(ctx context.Context, req AddAppointmentRequest) (*AddAppointmentResponse, localerrors.Error)
+	CreateNewService(ctx context.Context, request CreateNewServiceRequest) localerrors.Error
 }

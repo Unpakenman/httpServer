@@ -9,9 +9,7 @@ import (
 //go:generate ../../../../bin/mockery --with-expecter --case=underscore --name=GoExampleProvider
 
 type GoExampleProvider interface {
-	BeginTransaction() (pgclient.Transaction, error)
-	CommitTransaction(tx pgclient.Transaction) error
-	RollbackTransaction(tx pgclient.Transaction)
+	WithTransaction(ctx context.Context, fn func(context.Context, pgclient.Transaction) error) error
 
 	CreatePatient(
 		ctx context.Context,
@@ -33,4 +31,9 @@ type GoExampleProvider interface {
 		tx pgclient.Transaction,
 		data CreateAddAppointmentRequest,
 	) (models.Appointments, error)
+	CreateNewService(
+		ctx context.Context,
+		tx pgclient.Transaction,
+		data CreateNewServiceRequest,
+	) error
 }
