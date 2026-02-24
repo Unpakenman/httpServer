@@ -8,4 +8,7 @@ const (
 	HTTPTraceHeaderName = "traceparent"
 
 	RabbitMQLabel = "RabbitMQ"
+
+	ServiceMode = "service"
+	JobMode     = "job"
 )

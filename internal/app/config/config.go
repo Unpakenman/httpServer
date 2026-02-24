@@ -78,6 +78,8 @@ type AMQPConfig struct {
 	CommandsPrefetchCount int    `envconfig:"COMMANDS_PREFETCH_COUNT" required:"true"`
 	SmsQueue              string `envconfig:"SMS_QUEUE" required:"true"`
 	SmsSender             string `envconfig:"SMS_SENDER" required:"true"`
+
+	AppointmentsCommandsExchange string `envconfig:"APPOINTMENTS_EXCHANGE" required:"true"`
 }
 
 type HTTPClientConfig struct {
