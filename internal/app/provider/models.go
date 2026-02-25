@@ -36,4 +36,8 @@ type GoExampleProvider interface {
 		tx pgclient.Transaction,
 		data CreateNewServiceRequest,
 	) error
+	AppointmentList(
+		ctx context.Context,
+		tx pgclient.Transaction,
+	) ([]models.AppointmentList, error)
 }

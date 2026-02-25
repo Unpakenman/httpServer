@@ -16,5 +16,6 @@ func main() {
 	}
 	logger, err := appLog.New(*cfg)
 	config.Config = cfg
+	bootstrap.RunJob(ctx, cfg, logger, "appointment_list")
 	bootstrap.RunService(ctx, cfg, logger)
 }
