@@ -90,6 +90,12 @@ type SomeHttpServiceConfig struct {
 	URL string `envconfig:"URL" required:"true"`
 }
 
+type flagsValues struct {
+	Mode            string
+	JobName         string
+	UseLocalEnvFile bool
+}
+
 var Config *Values
 
 func New() (*Values, error) {

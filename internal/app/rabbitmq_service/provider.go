@@ -12,7 +12,7 @@ type rabbitmqService struct {
 }
 
 type RMQService interface {
-	SendSmsMessage(ctx context.Context, req SendSmsMessage) error
+	SendAppointmentsMessage(ctx context.Context, req []AppointmentsListMessage) error
 }
 
 func NewRMQService(
