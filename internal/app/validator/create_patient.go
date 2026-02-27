@@ -1,38 +1,55 @@
 package validator
 
 import (
-	"errors"
+	"github.com/gobuffalo/validate"
+	localerrors "httpServer/internal/app/errors"
 	"httpServer/internal/app/httpserver/models"
 	"regexp"
 )
 
-func (v *validator) CreatePatient(data models.CreatePatientRequest) error {
-	if data.FirstName == "" {
-		return errors.New("first name is required")
+func (v *validator) CreatePatient(data models.CreatePatientRequest) *[]localerrors.FieldViolation {
+	checks := []validate.Validator{
+		&StringLenGreaterThenValidator{
+			Name:  "first_name",
+			Field: data.FirstName,
+			Min:   1,
+		},
+		&StringLenGreaterThenValidator{
+			Name:  "last_name",
+			Field: data.LastName,
+			Min:   1,
+		},
+		&StringLenGreaterThenValidator{
+			Name:  "email",
+			Field: data.Email,
+			Min:   1,
+		},
+		&StringLenGreaterThenValidator{
+			Name:  "phone",
+			Field: data.PhoneNumber,
+			Min:   1,
+		},
+		&IsGreaterThanValidator[int32]{
+			Name:  "document_number",
+			Field: data.DocumentNumber,
+			Min:   1,
+		},
+		&IsGreaterThanValidator[int32]{
+			Name:  "special_number",
+			Field: data.DocumentSeries,
+			Min:   1,
+		},
 	}
-	if data.LastName == "" {
-		return errors.New("last name is required")
+	errors := validate.Validate(checks...)
+	var fieldErr = []localerrors.FieldViolation{
+		{
+			Field:       "phone_number",
+			Description: "phone_number does not match the pattern",
+		},
 	}
-	if data.PhoneNumber == "" {
-		return errors.New("phone number is required")
+	var phoneRegex = regexp.MustCompile(`^(?:\+7|8)?9\d{2}\d{7}$`)
+	if !phoneRegex.MatchString(data.PhoneNumber) {
+		return &fieldErr
 	}
-	if data.Email == "" {
-		return errors.New("email is required")
-	}
-	if data.DocumentNumber <= 0 {
-		return errors.New("mistake in document number")
-	}
-	if data.DocumentSeries <= 0 {
-		return errors.New("mistake in document series")
-	}
-	if data.PhoneNumber == "" || len(data.PhoneNumber) < 10 || len(data.PhoneNumber) > 12 {
-		return errors.New("phone number or phone number is invalid")
-	}
-	if _, err := regexp.MatchString(`^(?:\+7|8)?9\d{2}\d{7}$`, data.PhoneNumber); err != nil {
-		return err
-	}
-	/*if data.BirthDate.Before(time.Now()) {
-		return errors.New("birth date is required")
-	}*/
-	return nil
+	return FormatValidateErrors(errors)
 }

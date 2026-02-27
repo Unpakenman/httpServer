@@ -39,9 +39,14 @@
    clinic_id,
    patient_id,
    employee_id,
-   appointment_dttm,
+   start_at,
+   end_at,
    created_at,
    status,
    comment
+{{end}}
+
+{{define "ClinicEmployee"}}
+  id
 {{end}}
 

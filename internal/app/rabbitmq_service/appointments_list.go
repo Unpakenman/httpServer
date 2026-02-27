@@ -24,7 +24,7 @@ type AppointmentsListMessage struct {
 	DoctorLastName         string          `json:"doctor_last_name"`
 	ClinicAddress          string          `json:"clinic_address"`
 	Price                  decimal.Decimal `json:"price"`
-	AppointmentDTTM        string          `json:"appointment_dttm"`
+	StartAt                string          `json:"start_at"`
 	AppointmentDescription string          `json:"appointment_description"`
 }
 

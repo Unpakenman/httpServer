@@ -2,6 +2,7 @@ package mapper
 
 import (
 	pb "github.com/Unpakenman/protos/gen/go/sso/rpc"
+	"google.golang.org/grpc/codes"
 	localerrors "httpServer/internal/app/errors"
 	"httpServer/internal/app/usecase/clinics"
 )
@@ -14,7 +15,7 @@ type Mapper interface {
 	ProtoToAddClinicRequest(req *pb.AddClinicRequest) clinics.AddClinicRequest
 	AddClinicResponseToProtoResponse(resp *clinics.AddClinicResponse) *pb.AddClinicResponse
 	ProtoToAddEmployeeRequest(req *pb.AddEmployeeRequest) clinics.AddEmployeeRequest
-	ResultErrorToProto(resultError localerrors.Error) error
+	ResultErrorToProto(code codes.Code, resultError localerrors.Error) error
 	AddEmployeeResponseToProtoResponse(resp *clinics.AddEmployeeResponse) *pb.AddEmployeeResponse
 }
 

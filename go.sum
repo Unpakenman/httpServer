@@ -3,8 +3,10 @@ filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030IGemrRc=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
-github.com/Unpakenman/protos v0.0.15 h1:SagzAndxubbEoSSCdSQ8fj8paSG/o3atzcZHiYCQLdc=
-github.com/Unpakenman/protos v0.0.15/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
+github.com/Unpakenman/protos v0.0.16 h1:6Hj9stko/WyD4j0f3ZElwtPdWvIyHElQUBH63G0h1uE=
+github.com/Unpakenman/protos v0.0.16/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
+github.com/Unpakenman/protos v0.0.17 h1:a7tDETIVz/h/PtdoW/UA68EeyDQuTrpFVD0c73QlXmk=
+github.com/Unpakenman/protos v0.0.17/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
 github.com/XSAM/otelsql v0.41.0 h1:uZifjQhZhv5EDYJh+IVk1DiYxQZJBlNSen0MBFnfxB8=
 github.com/XSAM/otelsql v0.41.0/go.mod h1:NMQT0PiKoFILp9QgjQz+D5mvW+9mT0suR7OejqrtMaM=
 github.com/bits-and-blooms/bitset v1.24.4 h1:95H15Og1clikBrKr/DuzMXkQzECs1M6hhoGXLwLQOZE=
