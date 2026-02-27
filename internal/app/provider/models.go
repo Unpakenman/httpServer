@@ -31,6 +31,12 @@ type GoExampleProvider interface {
 		tx pgclient.Transaction,
 		data CreateAddAppointmentRequest,
 	) (models.Appointments, error)
+	CheckClinicEmployee(
+		ctx context.Context,
+		tx pgclient.Transaction,
+		clinicId int64,
+		employeeId int64,
+	) (*models.CheckClinicEmployee, error)
 	CreateNewService(
 		ctx context.Context,
 		tx pgclient.Transaction,

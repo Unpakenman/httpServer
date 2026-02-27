@@ -1,7 +1,12 @@
 package mapper
 
-import localerrors "httpServer/internal/app/errors"
+import (
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	localerrors "httpServer/internal/app/errors"
+)
 
-func (m *mapper) ResultErrorToProto(resultError localerrors.Error) error {
-	return resultError.ErrorProto()
+func (m *mapper) ResultErrorToProto(code codes.Code, resultError localerrors.Error) error {
+	st := status.New(code, resultError.Error())
+	return st.Err()
 }

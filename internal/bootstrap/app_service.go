@@ -87,10 +87,10 @@ func RunService(ctx context.Context, cfg *config.Values, log logger.LogClient) {
 	if err != nil {
 		log.Error(err)
 	}
+
 	pb.RegisterClinicsServer(grpcServer, clinicServerInstance)
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthcheck)
 	reflection.Register(grpcServer)
-
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
 
 	go func() {

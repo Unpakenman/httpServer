@@ -2,9 +2,11 @@ package clinics
 
 import (
 	"encoding/json"
+	"fmt"
 	"httpServer/internal/app/httpserver/models"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 )
 
@@ -23,8 +25,16 @@ func (r *httpRouter) CreatePatient(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if validateErrors := r.validator.CreatePatient(request); validateErrors != nil {
-		r.logger.ErrorCtx(req.Context(), validateErrors, "failed to validate patient")
+	if err := r.validator.CreatePatient(request); err != nil {
+		r.logger.ErrorCtx(req.Context(), fmt.Errorf("failed in validate body: %w", err))
+		http.Error(w, "BAD_REQUEST", http.StatusBadRequest)
+		return
+	}
+	var phoneRegex = regexp.MustCompile(`^(?:\+7|8)?9\d{2}\d{7}$`)
+
+	if !phoneRegex.MatchString(request.PhoneNumber) {
+		r.logger.ErrorCtx(req.Context(), fmt.Errorf("invalid phone number: %s", request.PhoneNumber))
+		http.Error(w, "BAD_REQUEST", http.StatusBadRequest)
 		return
 	}
 	requestCreatePatient := r.mapper.HttpToCreatePayinRequest(request)

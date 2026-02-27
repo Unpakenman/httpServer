@@ -20,7 +20,7 @@ func (u *clinicsUseCase) AppointmentList(ctx context.Context) localerrors.Error 
 			DoctorLastName:         appointment.DoctorLastName,
 			ClinicAddress:          appointment.ClinicAdress,
 			Price:                  appointment.Price,
-			AppointmentDTTM:        appointment.AppointmentDTTM,
+			StartAt:                appointment.StartAt,
 			AppointmentDescription: appointment.AppointmentDescription,
 		}
 		appointmentListPublish = append(appointmentListPublish, aplist)

@@ -47,9 +47,10 @@ INSERT INTO clinics.appointments(
   clinic_id,
   patient_id,
   employee_id,
-  appointment_dttm,
+  start_at,
+  end_at,
   comment
-)VALUES($1, $2, $3, $4, $5)
+)VALUES($1, $2, $3, $4, $5, $6)
 RETURNING {{template "Appointments"}}
 {{end}}
 
@@ -66,16 +67,22 @@ INSERT INTO clinics.services(
 
 {{define "AppointmentsList"}}
 SELECT p.first_name AS patient_name, p.last_name AS patient_last_name,
-       a.appointment_dttm, s.description , s.price, c.clinic_address, e.first_name AS doctor_name, e.last_name AS doctor_last_name
+       a.start_at, s.description , s.price, c.clinic_address, e.first_name AS doctor_name, e.last_name AS doctor_last_name
 FROM clinics.appointments a
          JOIN clinics.patients p on a.patient_id = p.patient_id
          JOIN clinics.clinics c on c.clinic_id = a.clinic_id
          JOIN clinics.appointments_services as2 on as2.appointment_id = a.appointment_id
          JOIN clinics.services s on s.service_id = as2.service_id
          JOIN  clinics.employees e on e.employee_id = a.employee_id
-WHERE a.appointment_dttm >= date_trunc('day', now() AT TIME ZONE 'Europe/Moscow')
-  AND a.appointment_dttm < date_trunc('day', now() AT TIME ZONE 'Europe/Moscow') + interval '1 day'
-ORDER BY a.appointment_dttm
+WHERE a.start_at >= date_trunc('day', now() AT TIME ZONE 'Europe/Moscow')
+  AND a.start_at < date_trunc('day', now() AT TIME ZONE 'Europe/Moscow') + interval '1 day'
+ORDER BY a.start_at
+{{end}}
+
+{{define "CheckClinicEmployee"}}
+select {{template "ClinicEmployee"}}
+from clinics.clinics_employees
+where clinic_id = $1 and employee_id=$2
 {{end}}
 
 
