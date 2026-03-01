@@ -8,6 +8,16 @@ import (
 )
 
 func (v *validator) CreatePatient(data models.CreatePatientRequest) *[]localerrors.FieldViolation {
+	var fieldErr = []localerrors.FieldViolation{
+		{
+			Field:       "phone_number",
+			Description: "phone_number does not match the pattern",
+		},
+	}
+	var phoneRegex = regexp.MustCompile(`^(?:\+7|8)?9\d{2}\d{7}$`)
+	if !phoneRegex.MatchString(data.PhoneNumber) {
+		return &fieldErr
+	}
 	checks := []validate.Validator{
 		&StringLenGreaterThenValidator{
 			Name:  "first_name",
@@ -41,15 +51,5 @@ func (v *validator) CreatePatient(data models.CreatePatientRequest) *[]localerro
 		},
 	}
 	errors := validate.Validate(checks...)
-	var fieldErr = []localerrors.FieldViolation{
-		{
-			Field:       "phone_number",
-			Description: "phone_number does not match the pattern",
-		},
-	}
-	var phoneRegex = regexp.MustCompile(`^(?:\+7|8)?9\d{2}\d{7}$`)
-	if !phoneRegex.MatchString(data.PhoneNumber) {
-		return &fieldErr
-	}
 	return FormatValidateErrors(errors)
 }

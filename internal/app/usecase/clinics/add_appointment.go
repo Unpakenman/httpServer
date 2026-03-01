@@ -27,6 +27,7 @@ func (u *clinicsUseCase) AddAppointment(
 	ctx context.Context,
 	req AddAppointmentRequest,
 ) (*AddAppointmentResponse, localerrors.Error) {
+	//бизнесс логика же?
 	now := time.Now()
 	if req.StartAt.Before(now) {
 		err := fmt.Errorf("start at %v is before now %v", req.StartAt, now)

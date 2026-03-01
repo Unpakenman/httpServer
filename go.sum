@@ -7,6 +7,8 @@ github.com/Unpakenman/protos v0.0.16 h1:6Hj9stko/WyD4j0f3ZElwtPdWvIyHElQUBH63G0h
 github.com/Unpakenman/protos v0.0.16/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
 github.com/Unpakenman/protos v0.0.17 h1:a7tDETIVz/h/PtdoW/UA68EeyDQuTrpFVD0c73QlXmk=
 github.com/Unpakenman/protos v0.0.17/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
+github.com/Unpakenman/protos v0.0.18 h1:sQyA7V1f+o5WNSQDUPA6Fq1NO8I9QNi2Q8jtQcFlJao=
+github.com/Unpakenman/protos v0.0.18/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
 github.com/XSAM/otelsql v0.41.0 h1:uZifjQhZhv5EDYJh+IVk1DiYxQZJBlNSen0MBFnfxB8=
 github.com/XSAM/otelsql v0.41.0/go.mod h1:NMQT0PiKoFILp9QgjQz+D5mvW+9mT0suR7OejqrtMaM=
 github.com/bits-and-blooms/bitset v1.24.4 h1:95H15Og1clikBrKr/DuzMXkQzECs1M6hhoGXLwLQOZE=

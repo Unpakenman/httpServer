@@ -13,6 +13,7 @@ type Validator interface {
 	AddClinic(req *pb.AddClinicRequest) *[]localerrors.FieldViolation
 	AddEmployee(req *pb.AddEmployeeRequest) *[]localerrors.FieldViolation
 	AddAppointment(req *pb.AddAppointmentRequest) *[]localerrors.FieldViolation
+	AppointmentsSlots(req *pb.AppointmentsSlotsRequest) *[]localerrors.FieldViolation
 }
 
 func New() Validator {
