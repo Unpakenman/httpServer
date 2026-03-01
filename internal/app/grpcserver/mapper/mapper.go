@@ -17,6 +17,8 @@ type Mapper interface {
 	ProtoToAddEmployeeRequest(req *pb.AddEmployeeRequest) clinics.AddEmployeeRequest
 	ResultErrorToProto(code codes.Code, resultError localerrors.Error) error
 	AddEmployeeResponseToProtoResponse(resp *clinics.AddEmployeeResponse) *pb.AddEmployeeResponse
+	ProtoToAppointmentsSlots(req *pb.AppointmentsSlotsRequest) clinics.AppointmentsSlotsRequest
+	AppointmentsSlotsToProto(resp *clinics.AppointmentsSlotsResponse) *pb.AppointmentsSlotsResponse
 }
 
 func New() Mapper { return &mapper{} }

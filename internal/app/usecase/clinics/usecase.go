@@ -41,4 +41,5 @@ type UseCase interface {
 	AddAppointment(ctx context.Context, req AddAppointmentRequest) (*AddAppointmentResponse, localerrors.Error)
 	CreateNewService(ctx context.Context, request CreateNewServiceRequest) localerrors.Error
 	AppointmentList(ctx context.Context) localerrors.Error
+	AppointmentsSlots(ctx context.Context, req AppointmentsSlotsRequest) (*AppointmentsSlotsResponse, localerrors.Error)
 }

@@ -86,3 +86,62 @@ where clinic_id = $1 and employee_id=$2
 {{end}}
 
 
+{{define "AppointmentsSlots"}}
+  WITH work_time AS (
+    SELECT
+    tstzrange(
+    $2::date + ws.start_working_at,
+    $2::date + ws.end_working_at,
+    '[)'
+    ) AS work_range,
+    tstzrange(
+    $2::date + ws.break_start_at,
+    $2::date + ws.break_end_at,
+    '[)'
+    ) AS break_range
+    FROM clinics.work_schedule ws
+    WHERE ws.employee_id = $1
+    AND EXTRACT(DOW FROM $2::date) = ws.day_of_week
+    ),
+    busy_time AS (
+    SELECT range_agg(tstzrange(start_at, end_at, '[)')) AS busy_ranges
+    FROM clinics.appointments
+    WHERE employee_id = $1
+    AND start_at::date = $2
+    AND status = 'confirmed'
+    ),
+    exceptions AS (
+    SELECT range_agg(tstzrange(exception_start_at, exception_end_at, '[)')) AS ex_ranges
+    FROM clinics.working_exceptions
+    WHERE employee_id = $1
+    AND exception_start_at::date = $2
+    ),
+    free AS (
+    SELECT
+    (
+    multirange(work_range)
+    - COALESCE(busy_ranges, '{}'::tstzmultirange)
+    - COALESCE(ex_ranges, '{}'::tstzmultirange)
+    - multirange(break_range)
+    ) AS free_ranges
+    FROM work_time, busy_time, exceptions
+    ),
+    expanded AS (
+    SELECT unnest(free_ranges) AS r
+    FROM free
+    ),
+    hour_slots AS (
+    SELECT
+    generate_series(
+    lower(r),
+    upper(r) - interval '1 hour',
+    interval '1 hour'
+    ) AS slot_start
+    FROM expanded
+    )
+SELECT
+    slot_start,
+    slot_start + interval '1 hour' AS slot_end
+FROM hour_slots
+ORDER BY slot_start;
+{{end}}
