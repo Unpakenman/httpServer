@@ -6,14 +6,17 @@ import (
 	"fmt"
 	"httpServer/internal/app/client/http"
 	"httpServer/internal/app/client/pg"
+	"httpServer/internal/app/client/redis"
 	"httpServer/internal/app/config"
 	ihttpservice "httpServer/internal/app/internal_services/internal_http_service"
 	"httpServer/internal/app/jobs"
 	logger "httpServer/internal/app/log"
 	"httpServer/internal/app/provider"
+	cacheprovider "httpServer/internal/app/provider/cache"
 	"httpServer/internal/app/rabbitmq_service"
 	rmqclient "httpServer/internal/app/rabbitmq_service/client"
 	"httpServer/internal/app/usecase/clinics"
+	"log"
 )
 
 func RunJob(ctx context.Context, cfg *config.Values, logger logger.LogClient, jobName string) {
@@ -44,11 +47,17 @@ func RunJob(ctx context.Context, cfg *config.Values, logger logger.LogClient, jo
 	DBProvider := provider.NewGoExampleDBProvider(dbConn)
 	appointmentRMQService := rabbitmq_service.NewRMQService(appointmentsPublisher)
 
+	cacheClient, err := redis.NewRedisClient(cfg.Redis.URL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cacheProvider := cacheprovider.NewRedisCache(cacheClient, cfg.Redis.Prefix)
+
 	httpClient := http.NewHTTPClient(cfg.HttpClient, logger)
 
 	someService := ihttpservice.NewService(cfg.SomeHttpService, httpClient)
 
-	clinicUseCase := clinics.NewUseCase(DBProvider, logger, someService, appointmentRMQService, cfg)
+	clinicUseCase := clinics.NewUseCase(DBProvider, logger, someService, appointmentRMQService, cfg, cacheProvider)
 
 	jobsFn := jobs.NewJobList(clinicUseCase)
 

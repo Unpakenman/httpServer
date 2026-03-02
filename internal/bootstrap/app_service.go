@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"httpServer/internal/app/client/http"
 	"httpServer/internal/app/client/pg"
+	"httpServer/internal/app/client/redis"
 	"httpServer/internal/app/config"
 	eventshandlers "httpServer/internal/app/events/handlers"
 	"httpServer/internal/app/grpcserver"
@@ -18,6 +19,7 @@ import (
 	ihttpservice "httpServer/internal/app/internal_services/internal_http_service"
 	logger "httpServer/internal/app/log"
 	"httpServer/internal/app/provider"
+	cacheprovider "httpServer/internal/app/provider/cache"
 	"httpServer/internal/app/rabbitmq_service"
 	rabbitmq "httpServer/internal/app/rabbitmq_service/client"
 	"httpServer/internal/app/usecase/clinics"
@@ -58,11 +60,17 @@ func RunService(ctx context.Context, cfg *config.Values, log logger.LogClient) {
 	}
 	rmqService := rabbitmq_service.NewRMQService(rmqSms)
 
+	cacheClient, err := redis.NewRedisClient(cfg.Redis.URL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cacheProvider := cacheprovider.NewRedisCache(cacheClient, cfg.Redis.Prefix)
+
 	httpClient := http.NewHTTPClient(cfg.HttpClient, log)
 	httpMapperInstance := httpmapper.New()
 
 	someService := ihttpservice.NewService(cfg.SomeHttpService, httpClient)
-	clinicsUseCaseInstance := clinics.NewUseCase(goExampleDBProvider, log, someService, rmqService, cfg)
+	clinicsUseCaseInstance := clinics.NewUseCase(goExampleDBProvider, log, someService, rmqService, cfg, cacheProvider)
 
 	eventHandlers := eventshandlers.NewHandlerList(log, clinicsUseCaseInstance)
 
