@@ -13,4 +13,7 @@ type Cache interface {
 
 	SetAppointmentsSlots(ctx context.Context, key string, data models.AppointmentsSlots, ttl time.Duration) error
 	GetAppointmentsSlots(ctx context.Context, key string) (*models.AppointmentsSlots, error)
+
+	GetAppointmentsList(ctx context.Context, key string) (*[]models.AppointmentList, error)
+	SetAppointmentsList(ctx context.Context, key string, data []models.AppointmentList, ttl time.Duration) error
 }
