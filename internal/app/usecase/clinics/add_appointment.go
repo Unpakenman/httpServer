@@ -11,12 +11,12 @@ import (
 )
 
 type AddAppointmentRequest struct {
-	ClinicId   int64
-	PatientId  int64
-	EmployeeId int64
-	StartAt    time.Time
-	EndAt      time.Time
-	Comment    string
+	ClinicId    int64
+	PatientId   int64
+	EmployeeId  int64
+	StartAt     time.Time
+	ServicesIDS []int64
+	Comment     string
 }
 
 type AddAppointmentResponse struct {
@@ -35,6 +35,13 @@ func (u *clinicsUseCase) AddAppointment(
 	}
 	var appointmentResp models.Appointments
 	txErr := u.provider.WithTransaction(ctx, func(ctx context.Context, transaction pgclient.Transaction) error {
+		durationAndAmount, err := u.provider.GetDurationMinutesAndPrice(ctx, nil, req.ServicesIDS)
+		if err != nil {
+			return err
+		}
+		durationMinutes := durationAndAmount.DurationMinutes
+		endDttm := req.StartAt.Add(time.Duration(durationMinutes) * time.Minute)
+		totalPrice := durationAndAmount.TotalPrice
 		existId, err := u.provider.CheckClinicEmployee(ctx, nil, req.ClinicId, req.EmployeeId)
 		if err != nil {
 			return err
@@ -50,8 +57,24 @@ func (u *clinicsUseCase) AddAppointment(
 				PatientId:  req.PatientId,
 				EmployeeId: req.EmployeeId,
 				StartAt:    req.StartAt,
-				EndAt:      req.EndAt,
+				EndAt:      endDttm,
 				Comment:    req.Comment,
+			})
+		if err != nil {
+			return localerrors.NewInternalErr(err)
+		}
+		appointmentID := appointmentResp.AppointmentId
+		err = u.provider.CreateTransaction(
+			ctx,
+			nil,
+			provider.CreateTransactionRequest{
+				PatientId:     req.PatientId,
+				ClinicId:      req.ClinicId,
+				AppointmentId: appointmentID,
+				Amount:        totalPrice,
+				Discount:      float32(0),
+				TotalAmount:   totalPrice,
+				ServicesIds:   req.ServicesIDS,
 			})
 		if err != nil {
 			return localerrors.NewInternalErr(err)

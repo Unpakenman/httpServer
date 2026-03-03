@@ -29,11 +29,6 @@ func (v *validator) AddAppointment(req *pb.AddAppointmentRequest) *[]localerrors
 			Min:   1,
 		},
 		&StringLenGreaterThenValidator{
-			Name:  "end_at",
-			Field: req.EndAt,
-			Min:   1,
-		},
-		&StringLenGreaterThenValidator{
 			Name:  "comment",
 			Field: req.Comment,
 			Min:   1,

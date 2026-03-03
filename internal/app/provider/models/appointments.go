@@ -14,3 +14,8 @@ type Appointments struct {
 type CheckClinicEmployee struct {
 	ID int64 `db:"id"`
 }
+
+type DurationAmount struct {
+	DurationMinutes int64   `db:"total_duration"`
+	TotalPrice      float32 `db:"total_price"`
+}

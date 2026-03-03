@@ -9,6 +9,8 @@ github.com/Unpakenman/protos v0.0.17 h1:a7tDETIVz/h/PtdoW/UA68EeyDQuTrpFVD0c73Ql
 github.com/Unpakenman/protos v0.0.17/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
 github.com/Unpakenman/protos v0.0.18 h1:sQyA7V1f+o5WNSQDUPA6Fq1NO8I9QNi2Q8jtQcFlJao=
 github.com/Unpakenman/protos v0.0.18/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
+github.com/Unpakenman/protos v0.1.0 h1:G2xRtCg3sbxdllgSJ9bWgqZyKow2zsDmt8Khs95Yhhw=
+github.com/Unpakenman/protos v0.1.0/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
 github.com/XSAM/otelsql v0.41.0 h1:uZifjQhZhv5EDYJh+IVk1DiYxQZJBlNSen0MBFnfxB8=
 github.com/XSAM/otelsql v0.41.0/go.mod h1:NMQT0PiKoFILp9QgjQz+D5mvW+9mT0suR7OejqrtMaM=
 github.com/bits-and-blooms/bitset v1.24.4 h1:95H15Og1clikBrKr/DuzMXkQzECs1M6hhoGXLwLQOZE=
@@ -124,6 +126,8 @@ github.com/lib/pq v1.2.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/lib/pq v1.10.2/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
 github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
+github.com/lib/pq v1.11.2 h1:x6gxUeu39V0BHZiugWe8LXZYZ+Utk7hSJGThs8sdzfs=
+github.com/lib/pq v1.11.2/go.mod h1:/p+8NSbOcwzAEI7wiMXFlgydTwcgTr3OSKMsD2BitpA=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
 github.com/mattn/go-colorable v0.1.6/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
 github.com/mattn/go-isatty v0.0.5/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hdxcsrc5s=

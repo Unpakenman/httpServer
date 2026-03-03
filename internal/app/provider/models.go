@@ -51,4 +51,14 @@ type GoExampleProvider interface {
 		tx pgclient.Transaction,
 		req AppointmentsSlotsRequest,
 	) ([]models.AppointmentsSlots, error)
+	GetDurationMinutesAndPrice(
+		ctx context.Context,
+		tx pgclient.Transaction,
+		servicesIds []int64,
+	) (*models.DurationAmount, error)
+	CreateTransaction(
+		ctx context.Context,
+		tx pgclient.Transaction,
+		data CreateTransactionRequest,
+	) error
 }
