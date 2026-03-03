@@ -2,12 +2,15 @@ package clinics
 
 import (
 	"context"
+	"fmt"
+	"httpServer/internal/app/constants"
 	localerrors "httpServer/internal/app/errors"
+	"httpServer/internal/app/provider/models"
 	"httpServer/internal/app/rabbitmq_service"
 )
 
 func (u *clinicsUseCase) AppointmentList(ctx context.Context) localerrors.Error {
-	appointmentsList, err := u.provider.AppointmentList(ctx, nil)
+	appointmentsList, err := u.getAppointmentsWithCached(ctx)
 	if err != nil {
 		return localerrors.NewInternalErr(err)
 	}
@@ -30,4 +33,18 @@ func (u *clinicsUseCase) AppointmentList(ctx context.Context) localerrors.Error 
 		return localerrors.NewInternalErr(errSend)
 	}
 	return nil
+}
+
+func (u *clinicsUseCase) getAppointmentsWithCached(ctx context.Context) ([]models.AppointmentList, localerrors.Error) {
+	cacheKey := fmt.Sprintf("appointmentslist:")
+	cached, err := u.cache.GetAppointmentsList(ctx, cacheKey)
+	if err == nil && cached != nil {
+		return *cached, nil
+	}
+	appointmentsList, err := u.provider.AppointmentList(ctx, nil)
+	if err != nil {
+		return []models.AppointmentList{}, localerrors.NewInternalErr(err)
+	}
+	_ = u.cache.SetAppointmentsList(ctx, cacheKey, appointmentsList, constants.CachedTTLappointmentList)
+	return appointmentsList, nil
 }

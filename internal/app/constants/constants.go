@@ -1,5 +1,7 @@
 package constants
 
+import "time"
+
 const (
 	UseLocalEnvFileArg = "--use-local-env"
 	DefaultEnvFile     = "../.env"
@@ -20,4 +22,8 @@ const (
 	JobNameArgName    = "job-name"
 	JobArgDescription = "Job name:\n\t<name> - run <name> job"
 	JobNameEmptyError = "job-name for mode=job required"
+)
+
+const (
+	CachedTTLappointmentList = 300 * time.Second
 )

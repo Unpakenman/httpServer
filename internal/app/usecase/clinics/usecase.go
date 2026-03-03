@@ -7,6 +7,7 @@ import (
 	ihttpservice "httpServer/internal/app/internal_services/internal_http_service"
 	logger "httpServer/internal/app/log"
 	"httpServer/internal/app/provider"
+	providerCache "httpServer/internal/app/provider/cache"
 	"httpServer/internal/app/rabbitmq_service"
 )
 
@@ -16,6 +17,7 @@ type clinicsUseCase struct {
 	internalService ihttpservice.Service
 	rmqService      rabbitmq_service.RMQService
 	config          *config.Values
+	cache           providerCache.Cache
 }
 
 func NewUseCase(
@@ -24,6 +26,7 @@ func NewUseCase(
 	internalService ihttpservice.Service,
 	rmqService rabbitmq_service.RMQService,
 	config *config.Values,
+	providerCache providerCache.Cache,
 ) UseCase {
 	return &clinicsUseCase{
 		provider:        provider,
@@ -31,6 +34,7 @@ func NewUseCase(
 		internalService: internalService,
 		rmqService:      rmqService,
 		config:          config,
+		cache:           providerCache,
 	}
 }
 

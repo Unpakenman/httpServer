@@ -15,6 +15,7 @@ type Values struct {
 	LogLevel        string                 `envconfig:"LOG_LEVEL" required:"true"`
 	HttpClient      *HTTPClientConfig      `envconfig:"HTTP_CLIENT" required:"true"`
 	SomeHttpService *SomeHttpServiceConfig `envconfig:"SOME_HTTP_SERVICE" required:"true"`
+	Redis           *Redis                 `envconfig:"REDIS" required:"true"`
 	AMQPServer      *AMQPConfig            `envconfig:"RABBITMQ" required:"true"`
 	GRPCServer      *GRPCServerConfig      `envconfig:"GRPC_SERVER" required:"true"`
 	GRPCClient      *GRPCClientConfig      `envconfig:"GRPC_CLIENT" required:"true"`
@@ -60,6 +61,11 @@ type DBConfig struct {
 	StatementTimeout                time.Duration `envconfig:"DB_CLINICS_STATEMENT_TIMEOUT" required:"false"`
 	IdleInTransactionSessionTimeout time.Duration `envconfig:"DB_CLINICS_IDLE_IN_TRANSACTION_SESSION_TIMEOUT" required:"false"`
 	LockTimeout                     time.Duration `envconfig:"DB_CLINICS_LOCK_TIMEOUT" required:"false"`
+}
+
+type Redis struct {
+	URL    string `envconfig:"URL" required:"true"`
+	Prefix string `envconfig:"PREFIX" required:"true"`
 }
 
 type AMQPConfig struct {
