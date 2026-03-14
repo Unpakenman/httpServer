@@ -11,17 +11,13 @@ func (m *mapper) ProtoToAddAppointmentRequest(req *pb.AddAppointmentRequest) (cl
 	if err != nil {
 		return clinics.AddAppointmentRequest{}, err
 	}
-	endAt, err := time.Parse("2006-01-02T15:04:05Z", req.EndAt)
-	if err != nil {
-		return clinics.AddAppointmentRequest{}, err
-	}
 	return clinics.AddAppointmentRequest{
-		ClinicId:   req.ClinicId,
-		PatientId:  req.PatientId,
-		EmployeeId: req.EmployeeId,
-		StartAt:    startAt,
-		EndAt:      endAt,
-		Comment:    req.Comment,
+		ClinicId:    req.ClinicId,
+		PatientId:   req.PatientId,
+		EmployeeId:  req.EmployeeId,
+		StartAt:     startAt,
+		ServicesIDS: req.ServicesIds,
+		Comment:     req.Comment,
 	}, nil
 }
 

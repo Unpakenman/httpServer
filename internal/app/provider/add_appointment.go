@@ -62,3 +62,77 @@ func (p *goExampleDBProvider) CheckClinicEmployee(
 	}
 	return &id, nil
 }
+
+func (p *goExampleDBProvider) GetDurationMinutesAndPrice(
+	ctx context.Context,
+	tx pgclient.Transaction,
+	servicesIds []int64,
+) (*models.DurationAmount, error) {
+	var durationAmount models.DurationAmount
+	err := p.conn.NamedGetContext(
+		ctx,
+		&durationAmount,
+		"GetDurationMinutesByServicesIds",
+		nil,
+		tx,
+		servicesIds,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("get duration minutes query error: %w", err)
+	}
+	return &durationAmount, nil
+}
+
+func (p *goExampleDBProvider) CreateAppointmentsServices(
+	ctx context.Context,
+	tx pgclient.Transaction,
+	appointmentId int64,
+	servicesIds []int64,
+) error {
+	for _, serviceId := range servicesIds {
+		_, err := p.conn.Exec(
+			ctx,
+			"CreateAppointmentsServices",
+			nil,
+			tx,
+			appointmentId,
+			serviceId)
+		if err != nil {
+			return fmt.Errorf("create appointments_services query error: %w", err)
+		}
+	}
+	return nil
+}
+
+type CreateTransactionRequest struct {
+	PatientId     int64
+	ClinicId      int64
+	AppointmentId int64
+	Amount        float32
+	Discount      float32
+	TotalAmount   float32
+	ServicesIds   []int64
+}
+
+func (p *goExampleDBProvider) CreateTransaction(
+	ctx context.Context,
+	tx pgclient.Transaction,
+	data CreateTransactionRequest,
+) error {
+	_, err := p.conn.Exec(
+		ctx,
+		"CreateTransaction",
+		nil,
+		tx,
+		data.PatientId,
+		data.ClinicId,
+		data.AppointmentId,
+		data.Amount,
+		data.Discount,
+		data.TotalAmount,
+		data.ServicesIds)
+	if err != nil {
+		return fmt.Errorf("create transaction query error: %w", err)
+	}
+	return nil
+}
