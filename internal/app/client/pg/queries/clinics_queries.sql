@@ -54,12 +54,18 @@ INSERT INTO clinics.appointments(
 RETURNING {{template "Appointments"}}
 {{end}}
 
+{{define "CreateAppointmentsServices"}}
+INSERT INTO clinics.appointments_services(
+  appointment_id,
+  service_id
+  )VALUES ($1, $2)
+{{end}}
+
 {{define "GetDurationMinutesByServicesIds"}}
 SELECT COALESCE(SUM(duration_minutes), 0) as total_duration,
        COALESCE(SUM(price), 0) as total_price
 FROM clinics.services
 WHERE service_id = ANY($1)
-  AND is_active = TRUE;
 {{end}}
 
 {{define "CreateTransaction"}}

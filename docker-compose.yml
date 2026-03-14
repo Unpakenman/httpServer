@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my_app
+    working_dir: /app
+    # Подгружаем .env с хоста
+    env_file:
+      - ./.env
+    ports:
+      - "3003:3003"
+      - "3004:3004"
+    command: ["./main", "--use-local-env"]

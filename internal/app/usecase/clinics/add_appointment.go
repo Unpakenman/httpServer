@@ -27,64 +27,57 @@ func (u *clinicsUseCase) AddAppointment(
 	ctx context.Context,
 	req AddAppointmentRequest,
 ) (*AddAppointmentResponse, localerrors.Error) {
-	//бизнесс логика же?
-	now := time.Now()
-	if req.StartAt.Before(now) {
-		err := fmt.Errorf("start at %v is before now %v", req.StartAt, now)
+	var appointmentResp models.Appointments
+	servicesInfo, err := u.provider.GetDurationMinutesAndPrice(ctx, nil, req.ServicesIDS)
+	if err != nil {
 		return nil, localerrors.NewInternalErr(err)
 	}
-	var appointmentResp models.Appointments
-	txErr := u.provider.WithTransaction(ctx, func(ctx context.Context, transaction pgclient.Transaction) error {
-		durationAndAmount, err := u.provider.GetDurationMinutesAndPrice(ctx, nil, req.ServicesIDS)
-		if err != nil {
-			return err
-		}
-		durationMinutes := durationAndAmount.DurationMinutes
-		endDttm := req.StartAt.Add(time.Duration(durationMinutes) * time.Minute)
-		totalPrice := durationAndAmount.TotalPrice
-		existId, err := u.provider.CheckClinicEmployee(ctx, nil, req.ClinicId, req.EmployeeId)
-		if err != nil {
-			return err
-		}
-		if existId == nil {
-			return fmt.Errorf("Employee not found in clinic")
-		}
-		appointmentResp, err = u.provider.AddAppointment(
-			ctx,
-			nil,
-			provider.CreateAddAppointmentRequest{
-				ClinicId:   req.ClinicId,
-				PatientId:  req.PatientId,
-				EmployeeId: req.EmployeeId,
-				StartAt:    req.StartAt,
-				EndAt:      endDttm,
-				Comment:    req.Comment,
-			})
+
+	existId, err := u.provider.CheckClinicEmployee(ctx, nil, req.ClinicId, req.EmployeeId)
+	if err != nil {
+		return nil, localerrors.NewInternalErr(err)
+	}
+
+	if existId == nil {
+		return nil, localerrors.NewBadRequestErr(fmt.Errorf("The doctor does not work at this clinic"))
+	}
+
+	txErr := u.provider.WithTransaction(ctx, func(ctx context.Context, tx pgclient.Transaction) error {
+		appointmentResp, err = u.provider.AddAppointment(ctx, tx, provider.CreateAddAppointmentRequest{
+			ClinicId:   req.ClinicId,
+			PatientId:  req.PatientId,
+			EmployeeId: req.EmployeeId,
+			StartAt:    req.StartAt,
+			EndAt:      req.StartAt.Add(time.Duration(servicesInfo.DurationMinutes) * time.Minute),
+			Comment:    req.Comment,
+		})
 		if err != nil {
 			return localerrors.NewInternalErr(err)
 		}
+
 		appointmentID := appointmentResp.AppointmentId
-		err = u.provider.CreateTransaction(
-			ctx,
-			nil,
-			provider.CreateTransactionRequest{
-				PatientId:     req.PatientId,
-				ClinicId:      req.ClinicId,
-				AppointmentId: appointmentID,
-				Amount:        totalPrice,
-				Discount:      float32(0),
-				TotalAmount:   totalPrice,
-				ServicesIds:   req.ServicesIDS,
-			})
-		if err != nil {
+		if err := u.provider.CreateAppointmentsServices(ctx, tx, appointmentID, req.ServicesIDS); err != nil {
 			return localerrors.NewInternalErr(err)
 		}
+
+		if err := u.provider.CreateTransaction(ctx, tx, provider.CreateTransactionRequest{
+			PatientId:     req.PatientId,
+			ClinicId:      req.ClinicId,
+			AppointmentId: appointmentID,
+			Amount:        servicesInfo.TotalPrice,
+			Discount:      float32(0),
+			TotalAmount:   servicesInfo.TotalPrice,
+			ServicesIds:   req.ServicesIDS,
+		}); err != nil {
+			return localerrors.NewInternalErr(err)
+		}
+
 		return nil
 	})
-
 	if txErr != nil {
 		return nil, localerrors.NewInternalErr(txErr)
 	}
+
 	return &AddAppointmentResponse{
 		AppointmentId: appointmentResp.AppointmentId,
 	}, nil

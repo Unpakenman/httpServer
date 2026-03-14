@@ -83,6 +83,27 @@ func (p *goExampleDBProvider) GetDurationMinutesAndPrice(
 	return &durationAmount, nil
 }
 
+func (p *goExampleDBProvider) CreateAppointmentsServices(
+	ctx context.Context,
+	tx pgclient.Transaction,
+	appointmentId int64,
+	servicesIds []int64,
+) error {
+	for _, serviceId := range servicesIds {
+		_, err := p.conn.Exec(
+			ctx,
+			"CreateAppointmentsServices",
+			nil,
+			tx,
+			appointmentId,
+			serviceId)
+		if err != nil {
+			return fmt.Errorf("create appointments_services query error: %w", err)
+		}
+	}
+	return nil
+}
+
 type CreateTransactionRequest struct {
 	PatientId     int64
 	ClinicId      int64

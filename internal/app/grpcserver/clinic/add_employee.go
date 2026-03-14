@@ -3,7 +3,6 @@ package clinic
 import (
 	"context"
 	pb "github.com/Unpakenman/protos/gen/go/sso/rpc"
-	"google.golang.org/grpc/codes"
 	localerrors "httpServer/internal/app/errors"
 )
 
@@ -13,8 +12,8 @@ func (s *ServerClinic) AddEmployee(
 ) (*pb.AddEmployeeResponse, error) {
 	if errs := s.validator.AddEmployee(req); errs != nil {
 		err := localerrors.NewInvalidArgumentErr(*errs)
-		s.log.InfoCtx(ctx, "AddEmployee validation error: ", err)
-		return nil, s.mapper.ResultErrorToProto(codes.InvalidArgument, err)
+		s.log.InfoCtx(ctx, "AddEmployee validation error: ", err.Error())
+		return nil, s.mapper.ResultErrorToProtoError(err)
 	}
 	useCaseReq := s.mapper.ProtoToAddEmployeeRequest(req)
 	useCaseResp, err := s.clinicUseCase.AddEmployee(ctx, useCaseReq)

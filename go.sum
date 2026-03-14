@@ -11,6 +11,10 @@ github.com/Unpakenman/protos v0.0.18 h1:sQyA7V1f+o5WNSQDUPA6Fq1NO8I9QNi2Q8jtQcFl
 github.com/Unpakenman/protos v0.0.18/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
 github.com/Unpakenman/protos v0.1.0 h1:G2xRtCg3sbxdllgSJ9bWgqZyKow2zsDmt8Khs95Yhhw=
 github.com/Unpakenman/protos v0.1.0/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
+github.com/Unpakenman/protos v0.1.1 h1:72fSmY3dAxeX3AqDtmyt2bxDhjnimYNIYpkcJvjpzaw=
+github.com/Unpakenman/protos v0.1.1/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
+github.com/Unpakenman/protos v0.1.2 h1:XdRYtKz7Hi+VfjaIXIkerf7uoBLCT4Jg5VqaESWIBwo=
+github.com/Unpakenman/protos v0.1.2/go.mod h1:cvZt4KNKNuJEzDkVV16uXwu0V+UPYRTDxAaTOKVFbwQ=
 github.com/XSAM/otelsql v0.41.0 h1:uZifjQhZhv5EDYJh+IVk1DiYxQZJBlNSen0MBFnfxB8=
 github.com/XSAM/otelsql v0.41.0/go.mod h1:NMQT0PiKoFILp9QgjQz+D5mvW+9mT0suR7OejqrtMaM=
 github.com/bits-and-blooms/bitset v1.24.4 h1:95H15Og1clikBrKr/DuzMXkQzECs1M6hhoGXLwLQOZE=

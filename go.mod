@@ -3,7 +3,7 @@ module httpServer
 go 1.25.1
 
 require (
-	github.com/Unpakenman/protos v0.1.0
+	github.com/Unpakenman/protos v0.1.2
 	github.com/XSAM/otelsql v0.41.0
 	github.com/failsafe-go/failsafe-go v0.9.5
 	github.com/go-chi/chi/v5 v5.2.4
