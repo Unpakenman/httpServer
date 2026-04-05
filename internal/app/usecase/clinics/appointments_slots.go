@@ -34,6 +34,7 @@ func (u *clinicsUseCase) AppointmentsSlots(
 	if err != nil {
 		return nil, localerrors.NewInternalErr(err)
 	}
+
 	appointmentsSlotsList := make([]AppointmentsSlotsItems, 0, len(appointmentsSlotsFromDB))
 	for _, appointment := range appointmentsSlotsFromDB {
 		appointmentsSlotsList = append(appointmentsSlotsList, AppointmentsSlotsItems{
@@ -41,6 +42,7 @@ func (u *clinicsUseCase) AppointmentsSlots(
 			EndAt:   appointment.EndAt,
 		})
 	}
+
 	return &AppointmentsSlotsResponse{
 		AppointmentsSlotsItems: appointmentsSlotsList,
 	}, nil

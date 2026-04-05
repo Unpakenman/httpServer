@@ -15,15 +15,18 @@ func (s *ServerClinic) AddAppointment(
 		s.log.InfoCtx(ctx, "AddClinic validation error: ", err.Error())
 		return nil, s.mapper.ResultErrorToProtoError(err)
 	}
+
 	useCaseReq, err := s.mapper.ProtoToAddAppointmentRequest(req)
 	if err != nil {
 		return nil, s.mapper.ResultErrorToProtoError(localerrors.NewInternalErr(err))
 	}
+
 	useCaseResp, err := s.clinicUseCase.AddAppointment(ctx, useCaseReq)
 	if err != nil {
 		s.log.ErrorCtx(ctx, err)
 		return nil, s.mapper.ResultErrorToProtoError(localerrors.NewInternalErr(err))
 	}
+
 	response := s.mapper.AddAppointmentResponseToProtoResponse(useCaseResp)
 	return response, nil
 }

@@ -15,12 +15,14 @@ func (s *ServerClinic) AddClinic(
 		s.log.InfoCtx(ctx, "AddClinic validation error: ", err.Error())
 		return nil, s.mapper.ResultErrorToProtoError(err)
 	}
+
 	useCaseReq := s.mapper.ProtoToAddClinicRequest(req)
 	resp, err := s.clinicUseCase.AddClinic(ctx, useCaseReq)
 	if err != nil {
 		s.log.ErrorCtx(ctx, err, "AddClinic UseCaseError")
 		return nil, err
 	}
+
 	response := s.mapper.AddClinicResponseToProtoResponse(resp)
 	return response, nil
 }

@@ -17,12 +17,14 @@ func (s *ServerClinic) AppointmentsSlotsRequest(
 		s.log.InfoCtx(ctx, "AppointmentsSlots validation error: ", err.Error())
 		return nil, s.mapper.ResultErrorToProtoError(err)
 	}
+
 	useCaseReq := s.mapper.ProtoToAppointmentsSlots(req)
 	useCaseResp, err := s.clinicUseCase.AppointmentsSlots(ctx, useCaseReq)
 	if err != nil {
 		s.log.ErrorCtx(ctx, err)
 		return nil, s.mapper.ResultErrorToProtoError(localerrors.NewInternalErr(err))
 	}
+
 	response := s.mapper.AppointmentsSlotsToProto(useCaseResp)
 	return response, nil
 }

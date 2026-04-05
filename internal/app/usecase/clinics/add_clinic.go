@@ -30,6 +30,7 @@ func (u *clinicsUseCase) AddClinic(
 	if err != nil {
 		return nil, localerrors.NewInternalErr(err)
 	}
+
 	clinicIdResp := strconv.FormatInt(result.ClinicID, 10)
 	return &AddClinicResponse{
 		ClinicId: clinicIdResp,

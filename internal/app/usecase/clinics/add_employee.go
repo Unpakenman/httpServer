@@ -37,6 +37,7 @@ func (u *clinicsUseCase) AddEmployee(
 	if err != nil {
 		return nil, localerrors.NewInternalErr(err)
 	}
+
 	return &AddEmployeeResponse{
 		EmployeeId: result.EmployeeID,
 	}, nil

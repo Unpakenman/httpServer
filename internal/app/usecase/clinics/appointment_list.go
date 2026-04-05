@@ -14,6 +14,7 @@ func (u *clinicsUseCase) AppointmentList(ctx context.Context) localerrors.Error 
 	if err != nil {
 		return localerrors.NewInternalErr(err)
 	}
+
 	appointmentListPublish := make([]rabbitmq_service.AppointmentsListMessage, 0, len(appointmentsList))
 	for _, appointment := range appointmentsList {
 		aplist := rabbitmq_service.AppointmentsListMessage{
@@ -32,6 +33,7 @@ func (u *clinicsUseCase) AppointmentList(ctx context.Context) localerrors.Error 
 	if errSend != nil {
 		return localerrors.NewInternalErr(errSend)
 	}
+
 	return nil
 }
 
@@ -41,10 +43,12 @@ func (u *clinicsUseCase) getAppointmentsWithCached(ctx context.Context) ([]model
 	if err == nil && cached != nil {
 		return *cached, nil
 	}
+
 	appointmentsList, err := u.provider.AppointmentList(ctx, nil)
 	if err != nil {
 		return []models.AppointmentList{}, localerrors.NewInternalErr(err)
 	}
+
 	_ = u.cache.SetAppointmentsList(ctx, cacheKey, appointmentsList, constants.CachedTTLappointmentList)
 	return appointmentsList, nil
 }

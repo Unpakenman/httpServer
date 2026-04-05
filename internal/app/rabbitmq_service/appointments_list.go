@@ -39,8 +39,10 @@ func (s *rabbitmqService) SendAppointmentsMessage(ctx context.Context, req []App
 	if err != nil {
 		return fmt.Errorf("marshal sms message: %w", err)
 	}
+
 	if err := s.PublishMessage(ctx, s.smsPublisher, smsMessageBody); err != nil {
 		return fmt.Errorf("publish sms message: %w", err)
 	}
+
 	return nil
 }

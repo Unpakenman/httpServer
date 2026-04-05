@@ -17,6 +17,7 @@ func (r *httpRouter) CreatePatient(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "BAD_REQUEST", http.StatusBadRequest)
 		return
 	}
+
 	var request models.CreatePatientRequest
 	requestErr := json.Unmarshal(bodyBytes, &request)
 	if requestErr != nil {
@@ -30,13 +31,14 @@ func (r *httpRouter) CreatePatient(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "BAD_REQUEST", http.StatusBadRequest)
 		return
 	}
-	var phoneRegex = regexp.MustCompile(`^(?:\+7|8)?9\d{2}\d{7}$`)
 
+	var phoneRegex = regexp.MustCompile(`^(?:\+7|8)?9\d{2}\d{7}$`)
 	if !phoneRegex.MatchString(request.PhoneNumber) {
 		r.logger.ErrorCtx(req.Context(), fmt.Errorf("invalid phone number: %s", request.PhoneNumber))
 		http.Error(w, "BAD_REQUEST", http.StatusBadRequest)
 		return
 	}
+
 	requestCreatePatient := r.mapper.HttpToCreatePayinRequest(request)
 	w.Header().Set("Content-Type", "application/json")
 	response, err := r.usecase.CreatePatient(req.Context(), requestCreatePatient)
@@ -48,8 +50,10 @@ func (r *httpRouter) CreatePatient(w http.ResponseWriter, req *http.Request) {
 		}); encodeErr != nil {
 			r.logger.ErrorCtx(req.Context(), encodeErr, "failed to encode response")
 		}
+
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	patientID := strconv.FormatInt(response.PatientID, 10)
 

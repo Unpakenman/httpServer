@@ -15,13 +15,14 @@ func (s *ServerClinic) AddEmployee(
 		s.log.InfoCtx(ctx, "AddEmployee validation error: ", err.Error())
 		return nil, s.mapper.ResultErrorToProtoError(err)
 	}
+
 	useCaseReq := s.mapper.ProtoToAddEmployeeRequest(req)
 	useCaseResp, err := s.clinicUseCase.AddEmployee(ctx, useCaseReq)
 	if err != nil {
 		s.log.ErrorCtx(ctx, err, "AddEmployee UseCaseError")
 		return nil, err
-
 	}
+
 	response := s.mapper.AddEmployeeResponseToProtoResponse(useCaseResp)
 	return response, nil
 }

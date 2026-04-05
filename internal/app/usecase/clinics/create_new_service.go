@@ -29,5 +29,6 @@ func (u *clinicsUseCase) CreateNewService(
 	if err != nil {
 		return localerrors.NewInternalErr(err)
 	}
+
 	return nil
 }
